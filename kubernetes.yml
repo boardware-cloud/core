@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: core
-        image: registry.boardware.com/bwc/core:latest
+        image: registry.boardware.com/bwc/core:0.0.7
         ports:
         - containerPort: 8080
         volumeMounts:
@@ -44,3 +44,15 @@ spec:
           name: core-config
       imagePullSecrets:
       - name: harbor
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: core-svc
+spec:
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: core

@@ -10,7 +10,7 @@ require (
 require github.com/spf13/viper v1.16.0 // indirect
 
 require (
-	github.com/boardware-cloud/common v0.0.0-20230817020532-8864de6ed385
+	github.com/boardware-cloud/common v0.0.0-20230817055338-82adc0f3d7db
 	github.com/boardware-cloud/core-api v0.0.0-20230816043420-1362b048f015
 	github.com/boardware-cloud/model v0.0.0-20230817044107-b7dd7bd70807
 	github.com/bwmarrin/snowflake v0.3.0 // indirect

@@ -56,7 +56,7 @@ func CreateSession(email, password string) (*Session, *errors.Error) {
 		expiredAt,
 	)
 	if err != nil {
-		return nil, errors.UndefineError()
+		return nil, errors.UndefineError("Undefine Error")
 	}
 	var a Account
 	a.Backward(*account)

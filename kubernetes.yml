@@ -15,14 +15,13 @@ spec:
         app: core
     spec:
       containers:
-        - name: core
-          image: registry.boardware.com/bwc/core:latest
-          ports:
-          - containerPort: 8080
-          volumeMounts:
-          - name: core-config
-            mountPath: /.env.yaml
-
+      - name: core
+        image: registry.boardware.com/bwc/core:latest
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: core-config
+          mountPath: /
       volumes:
       - name: core-config
         configMap:

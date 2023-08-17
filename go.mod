@@ -4,9 +4,10 @@ go 1.20
 
 require (
 	github.com/gin-gonic/gin v1.9.1
-	github.com/spf13/viper v1.16.0
 	gorm.io/gorm v1.25.3
 )
+
+require github.com/spf13/viper v1.16.0 // indirect
 
 require (
 	github.com/boardware-cloud/common v0.0.0-20230816093149-d3d3def3109a

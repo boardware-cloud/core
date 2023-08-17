@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"log"
 	"net/smtp"
 
 	"github.com/boardware-cloud/common/config"
@@ -50,8 +51,11 @@ func main() {
 	auth := LoginAuth(user, password)
 
 	// Send actual message
-	smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
+	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, to, message)
 
+	if err != nil {
+		log.Fatal(err)
+	}
 	port := ":" + config.GetString("server.port")
 	controllers.Init()
 	controllers.Run(port)

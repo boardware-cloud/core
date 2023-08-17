@@ -18,7 +18,8 @@ func init() {
 	host := config.GetString("database.host")
 	port := config.GetString("database.port")
 	database := config.GetString("database.database")
-	DB, err := model.NewConnection(user, password, host, port, database)
+	var err error
+	DB, err = model.NewConnection(user, password, host, port, database)
 	emailSender.SmtpHost = config.GetString("smtp.host")
 	emailSender.Port = config.GetString("smtp.port")
 	emailSender.Email = config.GetString("smtp.email")

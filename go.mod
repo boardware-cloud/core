@@ -12,7 +12,7 @@ require github.com/spf13/viper v1.16.0 // indirect
 require (
 	github.com/boardware-cloud/common v0.0.0-20230817020532-8864de6ed385
 	github.com/boardware-cloud/core-api v0.0.0-20230816043420-1362b048f015
-	github.com/boardware-cloud/model v0.0.0-20230816061825-0e583ec622bf
+	github.com/boardware-cloud/model v0.0.0-20230817044107-b7dd7bd70807
 	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/bytedance/sonic v1.10.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect

@@ -1,0 +1,15 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: core
+spec:
+  hosts:
+  - "core-uat.k8s19932be1.boardware.com"
+  gateways:
+  - istio-gateway/cluster-ingressgateway
+  http:
+  - route:
+    - destination:
+        host: core-svc
+        port:
+          number: 80

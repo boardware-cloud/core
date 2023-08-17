@@ -41,7 +41,6 @@ func CreateVerificationCode(identity string, purpose constants.VerificationCodeP
 			Purpose:  purpose,
 			Code:     RandomNumberString(6),
 		}
-		DB.Save(&newCode)
 		err := emailSender.SendHtml("", "Boardware Cloud verification code",
 			fmt.Sprintf(`
 		<html>
@@ -53,6 +52,7 @@ func CreateVerificationCode(identity string, purpose constants.VerificationCodeP
 		if err != nil {
 			return errors.UndefineError(err.Error())
 		}
+		DB.Save(&newCode)
 		return nil
 	}
 	return errors.VerificationCodeFrequent()

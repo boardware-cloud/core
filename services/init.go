@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/boardware-cloud/common/config"
 	"github.com/boardware-cloud/common/notifications"
 	"github.com/boardware-cloud/model"
 	"github.com/boardware-cloud/model/core"
@@ -27,10 +26,10 @@ func init() {
 	port := viper.GetString("database.port")
 	database := viper.GetString("database.database")
 	DB, err = model.NewConnection(user, password, host, port, database)
-	emailSender.SmtpHost = config.GetString("smtp.host")
-	emailSender.Port = config.GetString("smtp.port")
-	emailSender.Email = config.GetString("smtp.email")
-	emailSender.Password = config.GetString("smtp.password")
+	emailSender.SmtpHost = viper.GetString("smtp.host")
+	emailSender.Port = viper.GetString("smtp.port")
+	emailSender.Email = viper.GetString("smtp.email")
+	emailSender.Password = viper.GetString("smtp.password")
 	if err != nil {
 		panic(err)
 	}

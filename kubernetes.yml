@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: core
-        image: registry.boardware.com/bwc/core:0.0.12
+        image: registry.boardware.com/bwc/core:0.0.13
         ports:
         - containerPort: 8080
         volumeMounts:

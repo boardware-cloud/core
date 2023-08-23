@@ -43,9 +43,9 @@ func (a *Account) Backward(account core.Account) *Account {
 }
 
 func CreateSession(email, password string) (*Session, *errors.Error) {
-	var account *core.Account
-	DB.First(&account, "email = ?", email)
-	if account == nil || !utils.PasswordsMatch(account.Password, password, account.Salt) {
+	var account core.Account
+	ctx := DB.Find(&account, "email = ?", email)
+	if ctx.RowsAffected == 0 || !utils.PasswordsMatch(account.Password, password, account.Salt) {
 		return nil, errors.AuthenticationError()
 	}
 	expiredAt := time.Now().AddDate(0, 0, 7).Unix()
@@ -59,9 +59,9 @@ func CreateSession(email, password string) (*Session, *errors.Error) {
 		return nil, errors.UndefineError("Undefine Error")
 	}
 	var a Account
-	a.Backward(*account)
+	a.Backward(account)
 	return &Session{
-		Account:     *a.Backward(*account),
+		Account:     *a.Backward(account),
 		Token:       token,
 		TokenFormat: constants.JWT,
 		TokeType:    constants.BEARER,

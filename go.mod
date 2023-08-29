@@ -16,7 +16,7 @@ require (
 
 require (
 	github.com/boardware-cloud/common v0.0.0-20230829021313-3494c66e0992
-	github.com/boardware-cloud/core-api v0.0.0-20230829030016-59d6951cdf10
+	github.com/boardware-cloud/core-api v0.0.0-20230829065432-9fac76db3e18
 	github.com/boardware-cloud/model v0.0.0-20230829020135-de5468603c83
 	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/bytedance/sonic v1.10.0 // indirect
@@ -28,7 +28,7 @@ require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/go-playground/validator/v10 v10.15.1 // indirect
+	github.com/go-playground/validator/v10 v10.15.2 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect

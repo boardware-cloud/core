@@ -56,6 +56,8 @@ github.com/boardware-cloud/core-api v0.0.0-20230829020715-f9fed84b3082 h1:hkEUu5
 github.com/boardware-cloud/core-api v0.0.0-20230829020715-f9fed84b3082/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
 github.com/boardware-cloud/core-api v0.0.0-20230829030016-59d6951cdf10 h1:lNyHOjpMS72tFpi/Vq8F4wQMn8JES+dFUG/nUC1N5XI=
 github.com/boardware-cloud/core-api v0.0.0-20230829030016-59d6951cdf10/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
+github.com/boardware-cloud/core-api v0.0.0-20230829065432-9fac76db3e18 h1:Sggf4/yTS+LbBe66yeH1tdM/2gu2J1JPK5C7Z6KlW5E=
+github.com/boardware-cloud/core-api v0.0.0-20230829065432-9fac76db3e18/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
 github.com/boardware-cloud/middleware v0.0.0-20230829014555-6d3552a5d5a2 h1:8TBxSOEzQDPn3IPP9HuKbo8FRSqMYkHKT59RPMSbwg4=
 github.com/boardware-cloud/middleware v0.0.0-20230829014555-6d3552a5d5a2/go.mod h1:hJD7onyatTXt9t3o4t8CaQb0DMS+njGkRi/R9YioBXw=
 github.com/boardware-cloud/middleware v0.0.0-20230829025449-ec805dc98d41 h1:d40bOvhJJDONEbBFDE9Ld4ppzUVQwrf4cLTRA3Qm2F0=
@@ -121,6 +123,8 @@ github.com/go-playground/validator/v10 v10.15.0 h1:nDU5XeOKtB3GEa+uB7GNYwhVKsgjA
 github.com/go-playground/validator/v10 v10.15.0/go.mod h1:9iXMNT7sEkjXb0I+enO7QXmzG6QCsPWY4zveKFVRSyU=
 github.com/go-playground/validator/v10 v10.15.1 h1:BSe8uhN+xQ4r5guV/ywQI4gO59C2raYcGffYWZEjZzM=
 github.com/go-playground/validator/v10 v10.15.1/go.mod h1:9iXMNT7sEkjXb0I+enO7QXmzG6QCsPWY4zveKFVRSyU=
+github.com/go-playground/validator/v10 v10.15.2 h1:Ra5cll2/eF8X0Ff2+8SMD7euo2nenQ8WEpgqfy4NhHU=
+github.com/go-playground/validator/v10 v10.15.2/go.mod h1:9iXMNT7sEkjXb0I+enO7QXmzG6QCsPWY4zveKFVRSyU=
 github.com/go-sql-driver/mysql v1.7.0/go.mod h1:OXbVy3sEdcQ2Doequ6Z5BW6fXNQTmx+9S1MCJN5yJMI=
 github.com/go-sql-driver/mysql v1.7.1 h1:lUIinVbN1DY0xBg0eMOzmmtGoHwWBbvnWubQUrtU8EI=
 github.com/go-sql-driver/mysql v1.7.1/go.mod h1:OXbVy3sEdcQ2Doequ6Z5BW6fXNQTmx+9S1MCJN5yJMI=

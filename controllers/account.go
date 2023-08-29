@@ -23,7 +23,14 @@ var accountApi AccountApi
 // CreateTotp2FA implements coreapi.AccountApiInterface.
 func (AccountApi) CreateTotp2FA(c *gin.Context, request api.PutTotpRequest) {
 	middleware.GetAccount(c, func(c *gin.Context, account model.Account) {
-		core.CreateTotp2FA(account, request.VerificationCode)
+		url, err := core.CreateTotp2FA(account, request.VerificationCode)
+		if err != nil {
+			err.GinHandler(c)
+			return
+		}
+		c.JSON(http.StatusOK, api.Totp{
+			Url: url,
+		})
 	})
 }
 
@@ -59,7 +66,7 @@ func (AccountApi) CreateAccount(c *gin.Context, createAccountRequest api.CreateA
 		err := c.ShouldBindJSON(&createAccountRequest)
 		if err != nil {
 			// TODO: Error message
-			c.JSON(http.StatusBadRequest, gin.H{})
+			c.JSON(http.StatusBadRequest, "")
 			return
 		}
 		role := constants.USER

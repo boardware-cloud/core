@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/boardware-cloud/common/constants"
@@ -9,6 +8,7 @@ import (
 	"github.com/boardware-cloud/common/utils"
 	"github.com/boardware-cloud/model/core"
 	"github.com/chenyunda218/golambda"
+	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
 )
 
@@ -31,6 +31,7 @@ type Session struct {
 	ExpiredAt   int64                 `json:"expiredAt"`
 	CreatedAt   int64                 `json:"createdAt"`
 	Status      SessionStatus         `json:"status"`
+	FA          []string              `json:"FA"`
 }
 
 func (a Account) Forward() core.Account {
@@ -50,7 +51,6 @@ func (a *Account) Backward(account core.Account) *Account {
 
 func CreateTotp2FA(account core.Account, verificationCode string) (string, *errors.Error) {
 	code := GetVerification(account.Email, constants.CREATE_2FA)
-	fmt.Println(code, verificationCode)
 	if !verify(code, verificationCode) {
 		return "", errors.VerificationCodeError()
 	}
@@ -71,21 +71,35 @@ func CreateSession(email string, password, verificationCode, totpCode *string) (
 	if ctx.RowsAffected == 0 {
 		return nil, errors.AuthenticationError()
 	}
-	if password != nil && utils.PasswordsMatch(account.Password, *password, account.Salt) {
-		authed++
+	if password != nil {
+		if utils.PasswordsMatch(account.Password, *password, account.Salt) {
+			authed++
+		} else {
+			return nil, errors.AuthenticationError()
+		}
 	}
 	if verificationCode != nil {
 		code := GetVerification(email, constants.SIGNIN)
 		if verify(code, *verificationCode) {
 			authed++
+		} else {
+			return nil, errors.VerificationCodeError()
 		}
 	}
-	if authed == 0 {
-		return nil, errors.AuthenticationError()
+	if totpCode != nil && account.Totp != nil {
+		key, _ := otp.NewKeyFromURL(*account.Totp)
+		if totp.Validate(*totpCode, key.Secret()) {
+			authed++
+		}
 	}
 	if authed < fa {
+		FA := []string{"PASSWORD", "EMAIL"}
+		if account.Totp != nil {
+			FA = append(FA, "TOTP")
+		}
 		return &Session{
 			Status: "TWO_FA",
+			FA:     FA,
 		}, nil
 	}
 	expiredAt := time.Now().AddDate(0, 0, 7).Unix()
@@ -94,7 +108,7 @@ func CreateSession(email string, password, verificationCode, totpCode *string) (
 		account.Email,
 		string(account.Role),
 		expiredAt,
-		"",
+		"ACTIVED",
 	)
 	var a Account
 	a.Backward(account)

@@ -54,6 +54,8 @@ github.com/boardware-cloud/core-api v0.0.0-20230829020040-b138688af154 h1:q4bGbS
 github.com/boardware-cloud/core-api v0.0.0-20230829020040-b138688af154/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
 github.com/boardware-cloud/core-api v0.0.0-20230829020715-f9fed84b3082 h1:hkEUu5Lsf4BQd4dxcDBfx+9IEJwtvdSZovm/7PNr5L8=
 github.com/boardware-cloud/core-api v0.0.0-20230829020715-f9fed84b3082/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
+github.com/boardware-cloud/core-api v0.0.0-20230829030016-59d6951cdf10 h1:lNyHOjpMS72tFpi/Vq8F4wQMn8JES+dFUG/nUC1N5XI=
+github.com/boardware-cloud/core-api v0.0.0-20230829030016-59d6951cdf10/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
 github.com/boardware-cloud/middleware v0.0.0-20230829014555-6d3552a5d5a2 h1:8TBxSOEzQDPn3IPP9HuKbo8FRSqMYkHKT59RPMSbwg4=
 github.com/boardware-cloud/middleware v0.0.0-20230829014555-6d3552a5d5a2/go.mod h1:hJD7onyatTXt9t3o4t8CaQb0DMS+njGkRi/R9YioBXw=
 github.com/boardware-cloud/middleware v0.0.0-20230829025449-ec805dc98d41 h1:d40bOvhJJDONEbBFDE9Ld4ppzUVQwrf4cLTRA3Qm2F0=

@@ -6,11 +6,12 @@ import (
 
 	"github.com/boardware-cloud/common/errors"
 
-	"github.com/boardware-cloud/common/constants"
-
 	"net/http"
 
+	"github.com/boardware-cloud/common/constants"
 	"github.com/boardware-cloud/common/utils"
+	"github.com/boardware-cloud/middleware"
+	model "github.com/boardware-cloud/model/core"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,10 +20,19 @@ type AccountApi struct{}
 
 var accountApi AccountApi
 
+// CreateTotp2FA implements coreapi.AccountApiInterface.
+func (AccountApi) CreateTotp2FA(c *gin.Context, request api.PutTotpRequest) {
+	middleware.GetAccount(c, func(c *gin.Context, account model.Account) {
+		core.CreateTotp2FA(account, request.VerificationCode)
+	})
+}
+
 func (AccountApi) CreateSession(c *gin.Context, createSessionRequest api.CreateSessionRequest) {
 	session, sessionError := core.CreateSession(
-		createSessionRequest.Email,
+		*createSessionRequest.Email,
 		createSessionRequest.Password,
+		createSessionRequest.VerificationCode,
+		createSessionRequest.TotpCode,
 	)
 	if sessionError != nil {
 		sessionError.GinHandler(c)
@@ -44,7 +54,7 @@ func (AccountApi) CreateAccount(c *gin.Context, createAccountRequest api.CreateA
 		c.JSON(http.StatusCreated, AccountBackward(*a))
 		return
 	}
-	middleware.IsRoot(c, func(_ *gin.Context, _ api.Account) {
+	middleware.IsRoot(c, func(_ *gin.Context, _ model.Account) {
 		var createAccountRequest api.CreateAccountRequest
 		err := c.ShouldBindJSON(&createAccountRequest)
 		if err != nil {
@@ -74,8 +84,8 @@ func (AccountApi) ListAccount(gin_context *gin.Context, ordering api.Ordering, i
 }
 
 func (AccountApi) GetAccount(c *gin.Context) {
-	auth := Authorize(c)
-	if auth.Status != Authorized {
+	auth := middleware.Authorize(c)
+	if auth.Status != middleware.Authorized {
 		errors.UnauthorizedError().GinHandler(c)
 		return
 	}
@@ -97,14 +107,14 @@ func (AccountApi) GetAccountById(id string) *api.Account {
 }
 
 func (a AccountApi) VerifySession(c *gin.Context, sessionVerificationRequest api.SessionVerificationRequest) {
-	auth := Authorize(c)
-	if auth.Status != Authorized {
+	auth := middleware.Authorize(c)
+	if auth.Status != middleware.Authorized {
 		errors.UnauthorizedError().GinHandler(c)
 		return
 	}
 	account := a.GetAccountById(utils.UintToString(auth.AccountId))
 	if account == nil {
-		c.JSON(401, gin.H{})
+		c.JSON(http.StatusUnauthorized, "")
 		return
 	}
 	c.JSON(http.StatusOK, api.Session{

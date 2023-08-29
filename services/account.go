@@ -1,12 +1,15 @@
 package services
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/boardware-cloud/common/constants"
 	"github.com/boardware-cloud/common/errors"
 	"github.com/boardware-cloud/common/utils"
 	"github.com/boardware-cloud/model/core"
+	"github.com/chenyunda218/golambda"
+	"github.com/pquerna/otp/totp"
 )
 
 const EXPIRED_TIME = 60 * 5
@@ -18,6 +21,8 @@ type Account struct {
 	Role  constants.Role `json:"role"`
 }
 
+type SessionStatus string
+
 type Session struct {
 	Account     Account               `json:"account"`
 	Token       string                `json:"token"`
@@ -25,6 +30,7 @@ type Session struct {
 	TokenFormat constants.TokenFormat `json:"tokenFormat"`
 	ExpiredAt   int64                 `json:"expiredAt"`
 	CreatedAt   int64                 `json:"createdAt"`
+	Status      SessionStatus         `json:"status"`
 }
 
 func (a Account) Forward() core.Account {
@@ -42,22 +48,54 @@ func (a *Account) Backward(account core.Account) *Account {
 	return a
 }
 
-func CreateSession(email, password string) (*Session, *errors.Error) {
+func CreateTotp2FA(account core.Account, verificationCode string) (string, *errors.Error) {
+	code := GetVerification(account.Email, constants.CREATE_2FA)
+	fmt.Println(code, verificationCode)
+	if !verify(code, verificationCode) {
+		return "", errors.VerificationCodeError()
+	}
+	key, _ := totp.Generate(totp.GenerateOpts{
+		Issuer:      "cloud.boardware.com",
+		AccountName: account.Email,
+	})
+	account.Totp = golambda.Reference(key.String())
+	DB.Save(&account)
+	return *account.Totp, nil
+}
+
+func CreateSession(email string, password, verificationCode, totpCode *string) (*Session, *errors.Error) {
 	var account core.Account
 	ctx := DB.Find(&account, "email = ?", email)
-	if ctx.RowsAffected == 0 || !utils.PasswordsMatch(account.Password, password, account.Salt) {
+	fa := 2
+	authed := 0
+	if ctx.RowsAffected == 0 {
 		return nil, errors.AuthenticationError()
 	}
+	if password != nil && utils.PasswordsMatch(account.Password, *password, account.Salt) {
+		authed++
+	}
+	if verificationCode != nil {
+		code := GetVerification(email, constants.SIGNIN)
+		if verify(code, *verificationCode) {
+			authed++
+		}
+	}
+	if authed == 0 {
+		return nil, errors.AuthenticationError()
+	}
+	if authed < fa {
+		return &Session{
+			Status: "TWO_FA",
+		}, nil
+	}
 	expiredAt := time.Now().AddDate(0, 0, 7).Unix()
-	token, err := utils.SignJwt(
+	token, _ := utils.SignJwt(
 		utils.UintToString(account.ID),
 		account.Email,
 		string(account.Role),
 		expiredAt,
+		"",
 	)
-	if err != nil {
-		return nil, errors.UndefineError("Undefine Error")
-	}
 	var a Account
 	a.Backward(account)
 	return &Session{

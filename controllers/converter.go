@@ -1,30 +1,11 @@
 package controllers
 
 import (
-	"reflect"
-
 	api "github.com/boardware-cloud/core-api"
 	core "github.com/boardware-cloud/core/services"
 
 	"github.com/boardware-cloud/common/utils"
 )
-
-func Converter(f any) any {
-	typeOfA := reflect.TypeOf(f)
-	switch typeOfA.PkgPath() {
-	case "github.com/boardware-cloud/controllers/model":
-		switch typeOfA.Name() {
-		}
-	case "github.com/boardware-cloud/services/core":
-		switch typeOfA.Name() {
-		case "Account":
-			return AccountBackward(f.(core.Account))
-		case "Session":
-			return SessionBackward(f.(core.Session))
-		}
-	}
-	panic("No Converter")
-}
 
 func AccountBackward(account core.Account) api.Account {
 	return api.Account{
@@ -41,6 +22,7 @@ func SessionBackward(session core.Session) api.Session {
 		TokenType:   string(session.TokeType),
 		TokenFormat: string(session.TokenFormat),
 		ExpiredAt:   session.ExpiredAt,
+		Status:      api.SessionStatus(session.Status),
 	}
 }
 

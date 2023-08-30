@@ -71,6 +71,12 @@ func CreateSession(email string, password, verificationCode, totpCode *string) (
 	if ctx.RowsAffected == 0 {
 		return nil, errors.AuthenticationError()
 	}
+	var loginRecord core.LoginRecord
+	DB.Where("account_id = ?", account.ID).Order("created_at DESC").Limit(1).Find(&loginRecord)
+	if time.Now().Unix()-loginRecord.CreatedAt.Unix() <= 1 {
+		return nil, errors.TooManyRequestsError()
+	}
+	DB.Save(&core.LoginRecord{AccountId: account.ID})
 	if password != nil {
 		if utils.PasswordsMatch(account.Password, *password, account.Salt) {
 			authed++

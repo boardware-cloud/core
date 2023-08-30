@@ -46,6 +46,8 @@ github.com/boardware-cloud/common v0.0.0-20230828093529-adfd268e7e71 h1:lTMQ9WsG
 github.com/boardware-cloud/common v0.0.0-20230828093529-adfd268e7e71/go.mod h1:Ztn+PIPt9IhKncTFySl6LOyMhCV+AseebVcV5dDE18Y=
 github.com/boardware-cloud/common v0.0.0-20230829021313-3494c66e0992 h1:IQqDR3qsAz2jeEWo0sJQolK2ghmf0p4G86D5OLpL3r4=
 github.com/boardware-cloud/common v0.0.0-20230829021313-3494c66e0992/go.mod h1:Ztn+PIPt9IhKncTFySl6LOyMhCV+AseebVcV5dDE18Y=
+github.com/boardware-cloud/common v0.0.0-20230830010054-44f28742b66d h1:rFFzKHV7WKh+poU/ndkS3l9U0g3EyZiiyRZWnLnxljg=
+github.com/boardware-cloud/common v0.0.0-20230830010054-44f28742b66d/go.mod h1:Ztn+PIPt9IhKncTFySl6LOyMhCV+AseebVcV5dDE18Y=
 github.com/boardware-cloud/core-api v0.0.0-20230816043420-1362b048f015 h1:yAVRNcjDH/r4cXRSTNrrnnjhkKlDKQYpY7NkevFWFIA=
 github.com/boardware-cloud/core-api v0.0.0-20230816043420-1362b048f015/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
 github.com/boardware-cloud/core-api v0.0.0-20230828094436-1ecbbf6da4aa h1:t5/SRGs8gm5TbRJCsBl5gI0oX/e6MPRfb4fLFD4Vcuw=
@@ -68,6 +70,8 @@ github.com/boardware-cloud/model v0.0.0-20230828081943-121568cc4d76 h1:lBLXTa4Qu
 github.com/boardware-cloud/model v0.0.0-20230828081943-121568cc4d76/go.mod h1:W+zzVH4MuTtYn8FNOypSz2or/tE1YzGuQ3n35BRs9HY=
 github.com/boardware-cloud/model v0.0.0-20230829020135-de5468603c83 h1:ZOMSkChzoY04+43OTzftF4/zJKcxRT/qO+xHDYeWtZY=
 github.com/boardware-cloud/model v0.0.0-20230829020135-de5468603c83/go.mod h1:W+zzVH4MuTtYn8FNOypSz2or/tE1YzGuQ3n35BRs9HY=
+github.com/boardware-cloud/model v0.0.0-20230830005717-e8745cfddbcb h1:zM7qNYUKuXVqvcTmHAkkkDWsEyMNJmcPihPlTCmHleI=
+github.com/boardware-cloud/model v0.0.0-20230830005717-e8745cfddbcb/go.mod h1:W+zzVH4MuTtYn8FNOypSz2or/tE1YzGuQ3n35BRs9HY=
 github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
 github.com/boombuler/barcode v1.0.1 h1:NDBbPmhS+EqABEs5Kg3n/5ZNjy73Pz7SIV+KCeqyXcs=
 github.com/boombuler/barcode v1.0.1/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=

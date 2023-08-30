@@ -37,4 +37,5 @@ func init() {
 	DB.AutoMigrate(&core.Service{})
 	DB.AutoMigrate(&core.VerificationCode{})
 	DB.AutoMigrate(&core.LoginRecord{})
+	DB.AutoMigrate(&core.Ticket{})
 }

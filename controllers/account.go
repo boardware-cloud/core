@@ -35,17 +35,26 @@ func (AccountApi) CreateTotp2FA(c *gin.Context, request api.PutTotpRequest) {
 }
 
 func (AccountApi) CreateSession(c *gin.Context, createSessionRequest api.CreateSessionRequest) {
-	session, sessionError := core.CreateSession(
-		*createSessionRequest.Email,
-		createSessionRequest.Password,
-		createSessionRequest.VerificationCode,
-		createSessionRequest.TotpCode,
-	)
-	if sessionError != nil {
-		sessionError.GinHandler(c)
-		return
+	if createSessionRequest.Tickets != nil {
+		session, sessionError := core.CreateSessionWithTickets(*createSessionRequest.Email, *createSessionRequest.Tickets)
+		if sessionError != nil {
+			sessionError.GinHandler(c)
+			return
+		}
+		c.JSON(http.StatusCreated, SessionBackward(*session))
+	} else {
+		session, sessionError := core.CreateSession(
+			*createSessionRequest.Email,
+			createSessionRequest.Password,
+			createSessionRequest.VerificationCode,
+			createSessionRequest.TotpCode,
+		)
+		if sessionError != nil {
+			sessionError.GinHandler(c)
+			return
+		}
+		c.JSON(http.StatusCreated, SessionBackward(*session))
 	}
-	c.JSON(http.StatusCreated, SessionBackward(*session))
 }
 
 func (AccountApi) CreateAccount(c *gin.Context, createAccountRequest api.CreateAccountRequest) {

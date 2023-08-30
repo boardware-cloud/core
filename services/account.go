@@ -63,6 +63,57 @@ func CreateTotp2FA(account core.Account, verificationCode string) (string, *erro
 	return *account.Totp, nil
 }
 
+func CreateSessionWithTickets(email string, tokens []string) (*Session, *errors.Error) {
+	var account core.Account
+	ctx := DB.Find(&account, "email = ?", email)
+	if ctx.RowsAffected == 0 {
+		return nil, errors.AuthenticationError()
+	}
+	var loginRecord core.LoginRecord
+	DB.Where("account_id = ?", account.ID).Order("created_at DESC").Limit(1).Find(&loginRecord)
+	if time.Now().Unix()-loginRecord.CreatedAt.Unix() <= 1 {
+		return nil, errors.TooManyRequestsError()
+	}
+	DB.Save(&core.LoginRecord{AccountId: account.ID})
+	var fa map[string]bool = make(map[string]bool)
+	for _, token := range tokens {
+		ticket, err := UseTicket(token)
+		if err != nil {
+			return nil, err
+		}
+		if ticket.AccountId == account.ID {
+			fa[ticket.Type] = true
+		}
+	}
+	if len(fa) < 2 {
+		FA := []string{"PASSWORD", "EMAIL"}
+		if account.Totp != nil {
+			FA = append(FA, "TOTP")
+		}
+		return &Session{
+			Status: "TWO_FA",
+			FA:     FA,
+		}, nil
+	}
+	expiredAt := time.Now().AddDate(0, 0, 7).Unix()
+	token, _ := utils.SignJwt(
+		utils.UintToString(account.ID),
+		account.Email,
+		string(account.Role),
+		expiredAt,
+		"ACTIVED",
+	)
+	var a Account
+	a.Backward(account)
+	return &Session{
+		Account:     *a.Backward(account),
+		Token:       token,
+		TokenFormat: constants.JWT,
+		TokeType:    constants.BEARER,
+		ExpiredAt:   expiredAt,
+	}, nil
+}
+
 func CreateSession(email string, password, verificationCode, totpCode *string) (*Session, *errors.Error) {
 	var account core.Account
 	ctx := DB.Find(&account, "email = ?", email)

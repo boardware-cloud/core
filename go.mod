@@ -15,9 +15,9 @@ require (
 )
 
 require (
-	github.com/boardware-cloud/common v0.0.0-20230830010054-44f28742b66d
-	github.com/boardware-cloud/core-api v0.0.0-20230829065432-9fac76db3e18
-	github.com/boardware-cloud/model v0.0.0-20230830005717-e8745cfddbcb
+	github.com/boardware-cloud/common v0.0.0-20230830024903-e4ab89c02e2a
+	github.com/boardware-cloud/core-api v0.0.0-20230830031318-73e6da37e429
+	github.com/boardware-cloud/model v0.0.0-20230830023452-d16ac24b3e46
 	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/bytedance/sonic v1.10.0 // indirect
 	github.com/chenyunda218/golambda v0.0.0-20230809035428-25245dc9a8bd
@@ -43,7 +43,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
-	github.com/pelletier/go-toml/v2 v2.0.9 // indirect
+	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/spf13/afero v1.9.5 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect

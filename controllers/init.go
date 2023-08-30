@@ -16,6 +16,7 @@ func Init() {
 	api.AccountApiInterfaceMounter(router, accountApi)
 	api.ServicesApiInterfaceMounter(router, serviceApi)
 	api.VerificationApiInterfaceMounter(router, verificationApi)
+	api.TicketApiInterfaceMounter(router, ticketApi)
 }
 
 func Run(addr ...string) {

@@ -7,7 +7,6 @@ import (
 	"github.com/boardware-cloud/common/errors"
 	"github.com/boardware-cloud/common/utils"
 	"github.com/boardware-cloud/model/core"
-	"github.com/chenyunda218/golambda"
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
 )
@@ -49,18 +48,25 @@ func (a *Account) Backward(account core.Account) *Account {
 	return a
 }
 
-func CreateTotp2FA(account core.Account, verificationCode string) (string, *errors.Error) {
-	code := GetVerification(account.Email, constants.CREATE_2FA)
-	if !verify(code, verificationCode) {
-		return "", errors.VerificationCodeError()
+func UpdateTotp2FA(account core.Account, url, totpCode string) (string, *errors.Error) {
+	key, err := otp.NewKeyFromURL(url)
+	if err != nil {
+		return "", errors.UndefineError("TOTP url error")
 	}
+	if !totp.Validate(totpCode, key.Secret()) {
+		return "", errors.AuthenticationError()
+	}
+	account.Totp = &url
+	DB.Save(&account)
+	return *account.Totp, nil
+}
+
+func CreateTotp(account core.Account) string {
 	key, _ := totp.Generate(totp.GenerateOpts{
 		Issuer:      "cloud.boardware.com",
 		AccountName: account.Email,
 	})
-	account.Totp = golambda.Reference(key.String())
-	DB.Save(&account)
-	return *account.Totp, nil
+	return key.String()
 }
 
 func CreateSessionWithTickets(email string, tokens []string) (*Session, *errors.Error) {
@@ -75,17 +81,8 @@ func CreateSessionWithTickets(email string, tokens []string) (*Session, *errors.
 		return nil, errors.TooManyRequestsError()
 	}
 	DB.Save(&core.LoginRecord{AccountId: account.ID})
-	var fa map[string]bool = make(map[string]bool)
-	for _, token := range tokens {
-		ticket, err := UseTicket(token)
-		if err != nil {
-			return nil, err
-		}
-		if ticket.AccountId == account.ID {
-			fa[ticket.Type] = true
-		}
-	}
-	if len(fa) < 2 {
+	err := NFactor(account, tokens, 2)
+	if err != nil {
 		FA := []string{"PASSWORD", "EMAIL"}
 		if account.Totp != nil {
 			FA = append(FA, "TOTP")
@@ -270,4 +267,21 @@ func verify(v *core.VerificationCode, code string) bool {
 		return false
 	}
 	return true
+}
+
+func NFactor(account core.Account, tokens []string, factor int) *errors.Error {
+	var fa map[string]bool = make(map[string]bool)
+	for _, token := range tokens {
+		ticket, err := UseTicket(token)
+		if err != nil {
+			return errors.AuthenticationError()
+		}
+		if ticket.AccountId == account.ID {
+			fa[ticket.Type] = true
+		}
+	}
+	if len(fa) < factor {
+		return errors.AuthenticationError()
+	}
+	return nil
 }

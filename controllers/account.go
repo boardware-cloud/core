@@ -18,12 +18,25 @@ import (
 
 type AccountApi struct{}
 
+// GetTotp implements coreapi.AccountApiInterface.
+func (AccountApi) GetTotp(c *gin.Context) {
+	middleware.GetAccount(c,
+		func(c *gin.Context, account model.Account) {
+			c.JSON(http.StatusOK, api.Totp{Url: core.CreateTotp(account)})
+		})
+}
+
 var accountApi AccountApi
 
 // CreateTotp2FA implements coreapi.AccountApiInterface.
 func (AccountApi) CreateTotp2FA(c *gin.Context, request api.PutTotpRequest) {
 	middleware.GetAccount(c, func(c *gin.Context, account model.Account) {
-		url, err := core.CreateTotp2FA(account, request.VerificationCode)
+		err := core.NFactor(account, request.Tickets, 1)
+		if err != nil {
+			err.GinHandler(c)
+			return
+		}
+		url, err := core.UpdateTotp2FA(account, request.Url, request.TotpCode)
 		if err != nil {
 			err.GinHandler(c)
 			return

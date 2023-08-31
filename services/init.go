@@ -33,9 +33,5 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	DB.AutoMigrate(&core.Account{})
-	DB.AutoMigrate(&core.Service{})
-	DB.AutoMigrate(&core.VerificationCode{})
-	DB.AutoMigrate(&core.LoginRecord{})
-	DB.AutoMigrate(&core.Ticket{})
+	core.Init(DB)
 }

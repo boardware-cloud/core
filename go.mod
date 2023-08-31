@@ -10,14 +10,21 @@ require (
 require (
 	github.com/boardware-cloud/middleware v0.0.0-20230829025449-ec805dc98d41 // indirect
 	github.com/boombuler/barcode v1.0.1 // indirect
+	github.com/fxamacker/cbor/v2 v2.4.0 // indirect
+	github.com/go-webauthn/webauthn v0.8.6 // indirect
+	github.com/go-webauthn/x v0.1.4 // indirect
+	github.com/golang-jwt/jwt/v5 v5.0.0 // indirect
+	github.com/google/go-tpm v0.9.0 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/pquerna/otp v1.4.0 // indirect
 	github.com/spf13/viper v1.16.0 // indirect
+	github.com/x448/float16 v0.8.4 // indirect
 )
 
 require (
 	github.com/boardware-cloud/common v0.0.0-20230830024903-e4ab89c02e2a
 	github.com/boardware-cloud/core-api v0.0.0-20230830041812-6b0e73b8a3f7
-	github.com/boardware-cloud/model v0.0.0-20230830023452-d16ac24b3e46
+	github.com/boardware-cloud/model v0.0.0-20230831023124-ad976a3cfee6
 	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/bytedance/sonic v1.10.0 // indirect
 	github.com/chenyunda218/golambda v0.0.0-20230809035428-25245dc9a8bd

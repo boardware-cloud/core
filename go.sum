@@ -76,6 +76,8 @@ github.com/boardware-cloud/core-api v0.0.0-20230830041504-649a312f84e1 h1:R+BN7y
 github.com/boardware-cloud/core-api v0.0.0-20230830041504-649a312f84e1/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
 github.com/boardware-cloud/core-api v0.0.0-20230830041812-6b0e73b8a3f7 h1:2KLdleW5HJLNA/O5NKJ48Cs2VKpBHZitl5cqstQ3+Vg=
 github.com/boardware-cloud/core-api v0.0.0-20230830041812-6b0e73b8a3f7/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
+github.com/boardware-cloud/core-api v0.0.0-20230831094652-d6b287767249 h1:l/ishZtPg357VyDXMxIN6LMZkLYLPP2hnXG8jWsHFFs=
+github.com/boardware-cloud/core-api v0.0.0-20230831094652-d6b287767249/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
 github.com/boardware-cloud/middleware v0.0.0-20230829014555-6d3552a5d5a2 h1:8TBxSOEzQDPn3IPP9HuKbo8FRSqMYkHKT59RPMSbwg4=
 github.com/boardware-cloud/middleware v0.0.0-20230829014555-6d3552a5d5a2/go.mod h1:hJD7onyatTXt9t3o4t8CaQb0DMS+njGkRi/R9YioBXw=
 github.com/boardware-cloud/middleware v0.0.0-20230829025449-ec805dc98d41 h1:d40bOvhJJDONEbBFDE9Ld4ppzUVQwrf4cLTRA3Qm2F0=
@@ -110,6 +112,10 @@ github.com/boardware-cloud/model v0.0.0-20230831023026-d042f9d69179 h1:kk3EjLo0i
 github.com/boardware-cloud/model v0.0.0-20230831023026-d042f9d69179/go.mod h1:NOKB5qsLhApPBmI07oytHS2J5cQG5A6zdNGswaU5oss=
 github.com/boardware-cloud/model v0.0.0-20230831023124-ad976a3cfee6 h1:OAJIoY9nRL285gKoXvAsf+4B93x1wE8EUihhYAXxAWw=
 github.com/boardware-cloud/model v0.0.0-20230831023124-ad976a3cfee6/go.mod h1:NOKB5qsLhApPBmI07oytHS2J5cQG5A6zdNGswaU5oss=
+github.com/boardware-cloud/model v0.0.0-20230831085739-c921bd21096f h1:+ZEfJ4ZdHu+yvZ9QPxT8goI3hy7oM2DeOefnixEzf7k=
+github.com/boardware-cloud/model v0.0.0-20230831085739-c921bd21096f/go.mod h1:zlpJjLC8X/QTa/KnApnqLFeuGVods2wf/1C91NCkXdM=
+github.com/boardware-cloud/model v0.0.0-20230831094054-e2d00570d6e6 h1:GSAYRzIoOYKKmWvG8gXABMDOFPaSS3Mry7Sc5e6p+ek=
+github.com/boardware-cloud/model v0.0.0-20230831094054-e2d00570d6e6/go.mod h1:zlpJjLC8X/QTa/KnApnqLFeuGVods2wf/1C91NCkXdM=
 github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
 github.com/boombuler/barcode v1.0.1 h1:NDBbPmhS+EqABEs5Kg3n/5ZNjy73Pz7SIV+KCeqyXcs=
 github.com/boombuler/barcode v1.0.1/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
@@ -169,6 +175,8 @@ github.com/go-playground/validator/v10 v10.15.1 h1:BSe8uhN+xQ4r5guV/ywQI4gO59C2r
 github.com/go-playground/validator/v10 v10.15.1/go.mod h1:9iXMNT7sEkjXb0I+enO7QXmzG6QCsPWY4zveKFVRSyU=
 github.com/go-playground/validator/v10 v10.15.2 h1:Ra5cll2/eF8X0Ff2+8SMD7euo2nenQ8WEpgqfy4NhHU=
 github.com/go-playground/validator/v10 v10.15.2/go.mod h1:9iXMNT7sEkjXb0I+enO7QXmzG6QCsPWY4zveKFVRSyU=
+github.com/go-playground/validator/v10 v10.15.3 h1:S+sSpunYjNPDuXkWbK+x+bA7iXiW296KG4dL3X7xUZo=
+github.com/go-playground/validator/v10 v10.15.3/go.mod h1:9iXMNT7sEkjXb0I+enO7QXmzG6QCsPWY4zveKFVRSyU=
 github.com/go-sql-driver/mysql v1.7.0/go.mod h1:OXbVy3sEdcQ2Doequ6Z5BW6fXNQTmx+9S1MCJN5yJMI=
 github.com/go-sql-driver/mysql v1.7.1 h1:lUIinVbN1DY0xBg0eMOzmmtGoHwWBbvnWubQUrtU8EI=
 github.com/go-sql-driver/mysql v1.7.1/go.mod h1:OXbVy3sEdcQ2Doequ6Z5BW6fXNQTmx+9S1MCJN5yJMI=

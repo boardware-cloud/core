@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/boardware-cloud/common/server"
@@ -24,32 +25,24 @@ func Init() {
 	api.ServicesApiInterfaceMounter(router, serviceApi)
 	api.VerificationApiInterfaceMounter(router, verificationApi)
 	api.TicketApiInterfaceMounter(router, ticketApi)
-	router.POST("/account/webauthn/sessions",
+	router.POST("/2account/webauthn/sessions/:id",
 		func(ctx *gin.Context) {
-			middleware.GetAccount(ctx, func(ctx *gin.Context, account model.Account) {
-				options, session := services.BeginRegistration(account)
-				ctx.JSON(http.StatusOK, gin.H{
-					"id":        utils.UintToString(session.ID),
-					"publicKey": options.Response,
+			middleware.GetAccount(ctx,
+				func(ctx *gin.Context, account model.Account) {
+					var ccr protocol.CredentialCreationResponse
+					if err := json.NewDecoder(ctx.Request.Body).Decode(&ccr); err != nil {
+						return
+					}
+					fmt.Println(ccr.AttestationResponse)
+					// id := ctx.Param("id")
+					// if err := services.FinishRegistration(account, utils.StringToUint(id), "", "", ccr); err != nil {
+					// 	err.GinHandler(ctx)
+					// 	return
+					// }
+					// ctx.JSON(http.StatusCreated, "")
 				})
-			})
 		})
-	router.POST("/account/webauthn/sessions/:id",
-		func(ctx *gin.Context) {
-			middleware.GetAccount(ctx, func(ctx *gin.Context, account model.Account) {
-				var ccr protocol.CredentialCreationResponse
-				if err := json.NewDecoder(ctx.Request.Body).Decode(&ccr); err != nil {
-					return
-				}
-				id := ctx.Param("id")
-				if err := services.FinishRegistration(account, utils.StringToUint(id), ccr); err != nil {
-					err.GinHandler(ctx)
-					return
-				}
-				ctx.JSON(http.StatusCreated, "")
-			})
-		})
-	router.POST("/webauthn/sessions/tickets",
+	router.POST("/2webauthn/sessions/tickets",
 		func(ctx *gin.Context) {
 			type request struct {
 				Email string `json:"email"`
@@ -71,7 +64,7 @@ func Init() {
 				"publicKey": option.Response,
 			})
 		})
-	router.POST("/webauthn/sessions/tickets/:id",
+	router.POST("/2webauthn/sessions/tickets/:id",
 		func(ctx *gin.Context) {
 			response, err := protocol.ParseCredentialRequestResponseBody(ctx.Request.Body)
 			if err != nil {

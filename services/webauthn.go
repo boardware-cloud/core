@@ -23,13 +23,27 @@ func init() {
 	}
 	domain = viper.GetString("boardware.web.domain")
 	wconfig := &webauthn.Config{
-		RPDisplayName: "Boardware Cloud",                 // Display Name for your site
-		RPID:          domain,                            // Generally the FQDN for your site
-		RPOrigins:     []string{"http://localhost:3000"}, // The origin URLs allowed for WebAuthn requests
+		RPDisplayName: "Boardware Cloud",                                      // Display Name for your site
+		RPID:          domain,                                                 // Generally the FQDN for your site
+		RPOrigins:     []string{"https://" + domain, "http://localhost:3000"}, // The origin URLs allowed for WebAuthn requests
 	}
 	if authn, err = webauthn.New(wconfig); err != nil {
 		panic(err)
 	}
+}
+
+func DeleteWebAuthn(account core.Account, id uint) *errors.Error {
+	ctx := DB.Where("account_id = ? AND id = ?", account.ID, id).Delete(&core.Credential{})
+	if ctx.RowsAffected == 0 {
+		return errors.NotFoundError()
+	}
+	return nil
+}
+
+func ListWebAuthn(account core.Account) []core.Credential {
+	var webauthns []core.Credential = make([]core.Credential, 0)
+	DB.Where("account_id = ?", account.ID).Find(&webauthns)
+	return webauthns
 }
 
 func BeginRegistration(account core.Account) (*protocol.CredentialCreation, core.SessionData) {
@@ -42,7 +56,7 @@ func BeginRegistration(account core.Account) (*protocol.CredentialCreation, core
 	return options, sessionData
 }
 
-func FinishRegistration(account core.Account, sessionId uint, ccr protocol.CredentialCreationResponse) *errors.Error {
+func FinishRegistration(account core.Account, sessionId uint, name, os string, ccr protocol.CredentialCreationResponse) *errors.Error {
 	response, err := ccr.Parse()
 	if err != nil {
 		return errors.AuthenticationError()
@@ -56,7 +70,7 @@ func FinishRegistration(account core.Account, sessionId uint, ccr protocol.Crede
 	if err != nil {
 		return errors.AuthenticationError()
 	}
-	credential := core.Credential{AccountId: account.ID, Credential: core.WebAuthnCredential(*user)}
+	credential := core.Credential{AccountId: account.ID, Name: name, Os: os, Credential: core.WebAuthnCredential(*user)}
 	DB.Save(&credential)
 	return nil
 }

@@ -1,8 +1,12 @@
 package controllers
 
 import (
+	"encoding/json"
+
 	api "github.com/boardware-cloud/core-api"
 	core "github.com/boardware-cloud/core/services"
+	"github.com/chenyunda218/golambda"
+	"github.com/go-webauthn/webauthn/protocol"
 
 	"github.com/boardware-cloud/common/errors"
 
@@ -18,6 +22,109 @@ import (
 
 type AccountApi struct{}
 
+// DeleteWebAuthn implements coreapi.AccountApiInterface.
+func (AccountApi) DeleteWebAuthn(ctx *gin.Context, id string) {
+	middleware.GetAccount(ctx, func(c *gin.Context, account model.Account) {
+		err := core.DeleteWebAuthn(account, utils.StringToUint(id))
+		if err != nil {
+			err.GinHandler(ctx)
+			return
+		}
+		ctx.JSON(http.StatusNoContent, "")
+	})
+}
+
+// CreateWebauthnTickets implements coreapi.AccountApiInterface.
+func (AccountApi) CreateWebauthnTickets(ctx *gin.Context, id string) {
+	response, err := protocol.ParseCredentialRequestResponseBody(ctx.Request.Body)
+	if err != nil {
+		return
+	}
+	ticket, errg := core.FinishLogin(utils.StringToUint(id), response)
+	if errg != nil {
+		errg.GinHandler(ctx)
+		return
+	}
+	ctx.JSON(http.StatusCreated, api.Ticket{
+		Token: ticket,
+		Type:  api.WEBAUTHN,
+	})
+}
+
+// ListWebAuthn implements coreapi.AccountApiInterface.
+func (AccountApi) ListWebAuthn(ctx *gin.Context) {
+	middleware.GetAccount(ctx, func(ctx *gin.Context, account model.Account) {
+		webauthns := core.ListWebAuthn(account)
+		ctx.JSON(http.StatusOK, golambda.Map(webauthns,
+			func(_ int, cred model.Credential) api.WebAuthn {
+				return api.WebAuthn{
+					Id:        utils.UintToString(cred.ID),
+					Name:      cred.Name,
+					Os:        cred.Os,
+					CreatedAt: cred.CreatedAt.Unix(),
+				}
+			}))
+	})
+}
+
+// CreateWebauthnTicketChallenge implements coreapi.AccountApiInterface.
+func (AccountApi) CreateWebauthnTicketChallenge(ctx *gin.Context, request api.CreateTicketChallenge) {
+	account, err := model.GetAccountByEmail(request.Email)
+	if err != nil {
+		err.GinHandler(ctx)
+		return
+	}
+	option, session, err := core.BeginLogin(account)
+	if err != nil {
+		err.GinHandler(ctx)
+		return
+	}
+	ctx.JSON(http.StatusCreated, gin.H{
+		"id":        utils.UintToString(session.ID),
+		"publicKey": option.Response,
+	})
+}
+
+// CreateWebAuthnChallenge implements coreapi.AccountApiInterface.
+func (AccountApi) CreateWebAuthnChallenge(ctx *gin.Context) {
+	middleware.GetAccount(ctx,
+		func(ctx *gin.Context, account model.Account) {
+			options, session := core.BeginRegistration(account)
+			ctx.JSON(http.StatusOK, gin.H{
+				"id":        utils.UintToString(session.ID),
+				"publicKey": options.Response,
+			})
+		})
+}
+
+type Credential struct {
+	protocol.CredentialCreationResponse
+	Name string `json:"name"`
+	Os   string `json:"os"`
+}
+
+// CreateWebauthn implements coreapi.AccountApiInterface.
+func (AccountApi) CreateWebauthn(ctx *gin.Context, id string) {
+	middleware.GetAccount(ctx,
+		func(ctx *gin.Context, account model.Account) {
+			var ccr Credential
+			if err := json.NewDecoder(ctx.Copy().Request.Body).Decode(&ccr); err != nil {
+				ctx.JSON(http.StatusBadRequest, "")
+				return
+			}
+			if err := core.FinishRegistration(
+				account,
+				utils.StringToUint(id),
+				ccr.Name,
+				ccr.Os,
+				ccr.CredentialCreationResponse); err != nil {
+				err.GinHandler(ctx)
+				return
+			}
+			ctx.JSON(http.StatusCreated, "")
+		})
+}
+
 // GetTotp implements coreapi.AccountApiInterface.
 func (AccountApi) GetTotp(c *gin.Context) {
 	middleware.GetAccount(c,
@@ -25,8 +132,6 @@ func (AccountApi) GetTotp(c *gin.Context) {
 			c.JSON(http.StatusOK, api.Totp{Url: core.CreateTotp(account)})
 		})
 }
-
-var accountApi AccountApi
 
 // CreateTotp2FA implements coreapi.AccountApiInterface.
 func (AccountApi) CreateTotp2FA(c *gin.Context, request api.PutTotpRequest) {
@@ -159,3 +264,5 @@ func (AccountApi) UpdatePassword(c *gin.Context, request api.UpdatePasswordReque
 	}
 	c.String(http.StatusNoContent, "")
 }
+
+var accountApi AccountApi

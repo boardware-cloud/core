@@ -77,7 +77,7 @@ func CreateSessionWithTickets(email string, tokens []string) (*Session, *errors.
 	}
 	var loginRecord core.LoginRecord
 	DB.Where("account_id = ?", account.ID).Order("created_at DESC").Limit(1).Find(&loginRecord)
-	if time.Now().Unix()-loginRecord.CreatedAt.Unix() <= 1 {
+	if time.Now().UnixMilli()-loginRecord.CreatedAt.UnixMilli() <= 250 {
 		return nil, errors.TooManyRequestsError()
 	}
 	DB.Save(&core.LoginRecord{AccountId: account.ID})

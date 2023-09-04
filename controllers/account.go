@@ -3,12 +3,12 @@ package controllers
 import (
 	"encoding/json"
 
+	"github.com/boardware-cloud/common/constants/authenication"
+	"github.com/boardware-cloud/common/errors"
 	api "github.com/boardware-cloud/core-api"
 	core "github.com/boardware-cloud/core/services"
 	"github.com/chenyunda218/golambda"
 	"github.com/go-webauthn/webauthn/protocol"
-
-	"github.com/boardware-cloud/common/errors"
 
 	"net/http"
 
@@ -21,6 +21,23 @@ import (
 )
 
 type AccountApi struct{}
+
+// GetAuthentication implements coreapi.AccountApiInterface.
+func (AccountApi) GetAuthentication(ctx *gin.Context, request api.CreateSessionRequest) {
+	if request.Email == nil {
+		errors.NotFoundError().GinHandler(ctx)
+		return
+	}
+	factors := core.GetAuthenticationFactors(*request.Email)
+	if len(factors) == 0 {
+		errors.NotFoundError().GinHandler(ctx)
+		return
+	}
+	ctx.JSON(http.StatusOK, api.Authentication{Factors: golambda.Map(factors,
+		func(_ int, factor authenication.AuthenticationFactor) string {
+			return string(factor)
+		})})
+}
 
 // DeleteWebAuthn implements coreapi.AccountApiInterface.
 func (AccountApi) DeleteWebAuthn(ctx *gin.Context, id string) {

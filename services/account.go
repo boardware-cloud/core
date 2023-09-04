@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/boardware-cloud/common/constants"
+	"github.com/boardware-cloud/common/constants/authenication"
 	"github.com/boardware-cloud/common/errors"
 	"github.com/boardware-cloud/common/utils"
 	"github.com/boardware-cloud/model/core"
@@ -109,6 +110,23 @@ func CreateSessionWithTickets(email string, tokens []string) (*Session, *errors.
 		TokeType:    constants.BEARER,
 		ExpiredAt:   expiredAt,
 	}, nil
+}
+
+func GetAuthenticationFactors(email string) []authenication.AuthenticationFactor {
+	account, err := core.GetAccountByEmail(email)
+	var factors []authenication.AuthenticationFactor
+	if err != nil {
+		return factors
+	}
+	factors = append(factors, authenication.PASSWORD)
+	factors = append(factors, authenication.EMAIL)
+	if account.Totp != nil {
+		factors = append(factors, authenication.TOTP)
+	}
+	if len(account.WebAuthnCredentials()) != 0 {
+		factors = append(factors, authenication.WEBAUTHN)
+	}
+	return factors
 }
 
 func CreateSession(email string, password, verificationCode, totpCode *string) (*Session, *errors.Error) {

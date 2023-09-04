@@ -23,12 +23,12 @@ import (
 type AccountApi struct{}
 
 // GetAuthentication implements coreapi.AccountApiInterface.
-func (AccountApi) GetAuthentication(ctx *gin.Context, request api.CreateSessionRequest) {
-	if request.Email == nil {
+func (AccountApi) GetAuthentication(ctx *gin.Context, email string) {
+	if email == "" {
 		errors.NotFoundError().GinHandler(ctx)
 		return
 	}
-	factors := core.GetAuthenticationFactors(*request.Email)
+	factors := core.GetAuthenticationFactors(email)
 	if len(factors) == 0 {
 		errors.NotFoundError().GinHandler(ctx)
 		return

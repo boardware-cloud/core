@@ -25,4 +25,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ vars.DOCKER_NAME }}:latest
+          tags: ${{ vars.DOCKER_NAME }}:${{ github.sha }}

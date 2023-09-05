@@ -19,12 +19,6 @@ func CreateTicket(email, ticketType string, password, verificationCode, totpCode
 	if ctx.RowsAffected == 0 {
 		return "", errors.NotFoundError()
 	}
-	var loginRecord core.LoginRecord
-	DB.Where("account_id = ?", account.ID).Order("created_at DESC").Limit(1).Find(&loginRecord)
-	if time.Now().Unix()-loginRecord.CreatedAt.Unix() <= 1 {
-		return "", errors.TooManyRequestsError()
-	}
-	DB.Save(&core.LoginRecord{AccountId: account.ID})
 	switch ticketType {
 	case "PASSWORD":
 		if password != nil {

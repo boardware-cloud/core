@@ -16,9 +16,10 @@ const EXPIRED_TIME = 60 * 5
 const MAX_TRIES = 10
 
 type Account struct {
-	ID    uint           `json:"id"`
-	Email string         `json:"email"`
-	Role  constants.Role `json:"role"`
+	ID      uint           `json:"id"`
+	Email   string         `json:"email"`
+	Role    constants.Role `json:"role"`
+	HasTotp bool           `json:"hasTotp"`
 }
 
 type SessionStatus string
@@ -46,6 +47,7 @@ func (a *Account) Backward(account core.Account) *Account {
 	a.Email = account.Email
 	a.ID = account.ID
 	a.Role = account.Role
+	a.HasTotp = (account.Totp != nil)
 	return a
 }
 

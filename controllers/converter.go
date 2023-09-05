@@ -9,9 +9,10 @@ import (
 
 func AccountBackward(account core.Account) api.Account {
 	return api.Account{
-		Id:    utils.UintToString(account.ID),
-		Email: account.Email,
-		Role:  api.Role(account.Role),
+		Id:      utils.UintToString(account.ID),
+		Email:   account.Email,
+		Role:    api.Role(account.Role),
+		HasTotp: account.HasTotp,
 	}
 }
 

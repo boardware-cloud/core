@@ -154,6 +154,16 @@ github.com/boardware-cloud/model v0.0.0-20230901013312-45dc4810e6aa h1:7yVQikXVh
 github.com/boardware-cloud/model v0.0.0-20230901013312-45dc4810e6aa/go.mod h1:zlpJjLC8X/QTa/KnApnqLFeuGVods2wf/1C91NCkXdM=
 github.com/boardware-cloud/model v0.0.0-20230902092321-ff412115ffbf h1:XISdYOulvROQyqsPZ85PX1FpDMYlZbpHrR8ioAn/JWE=
 github.com/boardware-cloud/model v0.0.0-20230902092321-ff412115ffbf/go.mod h1:zlpJjLC8X/QTa/KnApnqLFeuGVods2wf/1C91NCkXdM=
+github.com/boardware-cloud/model v0.0.0-20230906083934-c9183e2eaad5 h1:mxXOqzWItqekDwPkYSjFJIsJEfzggATmoFRVAcSBbH0=
+github.com/boardware-cloud/model v0.0.0-20230906083934-c9183e2eaad5/go.mod h1:zlpJjLC8X/QTa/KnApnqLFeuGVods2wf/1C91NCkXdM=
+github.com/boardware-cloud/model v0.0.0-20230906085811-2800db6d66fb h1:upF1qje+VerVyNqz6jvo27bPY8AhyxBCmu6Uvrodyj0=
+github.com/boardware-cloud/model v0.0.0-20230906085811-2800db6d66fb/go.mod h1:zlpJjLC8X/QTa/KnApnqLFeuGVods2wf/1C91NCkXdM=
+github.com/boardware-cloud/model v0.0.0-20230906090318-cb083cb94511 h1:rim6IkfGdQ2ZDul2kblyPDA7P7NL4G0HYehordNKebQ=
+github.com/boardware-cloud/model v0.0.0-20230906090318-cb083cb94511/go.mod h1:zlpJjLC8X/QTa/KnApnqLFeuGVods2wf/1C91NCkXdM=
+github.com/boardware-cloud/model v0.0.0-20230906090559-84f496772338 h1:VgWYU1KCnTR1+1U/1EgMMpbg+80DDqEEUzfqi/b5nc4=
+github.com/boardware-cloud/model v0.0.0-20230906090559-84f496772338/go.mod h1:zlpJjLC8X/QTa/KnApnqLFeuGVods2wf/1C91NCkXdM=
+github.com/boardware-cloud/model v0.0.0-20230906090719-1c13358bb0c2 h1:ApGER4L4fi1bsImPQIhfL4x6rzEFI4SSAVbdM5b87Xw=
+github.com/boardware-cloud/model v0.0.0-20230906090719-1c13358bb0c2/go.mod h1:zlpJjLC8X/QTa/KnApnqLFeuGVods2wf/1C91NCkXdM=
 github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
 github.com/boombuler/barcode v1.0.1 h1:NDBbPmhS+EqABEs5Kg3n/5ZNjy73Pz7SIV+KCeqyXcs=
 github.com/boombuler/barcode v1.0.1/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=

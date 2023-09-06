@@ -14,7 +14,6 @@ func Init() {
 	router.Use(server.CorsMiddleware())
 	middleware.Health(router)
 	api.AccountApiInterfaceMounter(router, accountApi)
-	api.ServicesApiInterfaceMounter(router, serviceApi)
 	api.VerificationApiInterfaceMounter(router, verificationApi)
 	api.TicketApiInterfaceMounter(router, ticketApi)
 }

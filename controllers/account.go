@@ -239,8 +239,26 @@ func (AccountApi) CreateAccount(c *gin.Context, createAccountRequest api.CreateA
 	})
 }
 
-func (AccountApi) ListAccount(gin_context *gin.Context, ordering api.Ordering, index int64, limit int64) {
-	// TODO: List account api
+func (AccountApi) ListAccount(ctx *gin.Context, ordering api.Ordering, index int64, limit int64) {
+	middleware.IsRoot(ctx,
+		func(ctx *gin.Context, account model.Account) {
+			list := core.ListAccount(index, limit)
+			ctx.JSON(http.StatusOK, api.AccountList{
+				Data: golambda.Map(list.Data, func(_ int, account core.Account) api.Account {
+					return api.Account{
+						Id:      utils.UintToString(account.ID),
+						Email:   account.Email,
+						HasTotp: account.HasTotp,
+						Role:    api.Role(account.Role),
+					}
+				}),
+				Pagination: api.Pagination{
+					Limit: list.Pagination.Limit,
+					Index: list.Pagination.Index,
+					Total: list.Pagination.Total,
+				},
+			})
+		})
 }
 
 func (AccountApi) GetAccount(c *gin.Context) {

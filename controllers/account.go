@@ -22,6 +22,15 @@ import (
 
 type AccountApi struct{}
 
+// DeleteTotp implements coreapi.AccountApiInterface.
+func (AccountApi) DeleteTotp(ctx *gin.Context) {
+	middleware.GetAccount(ctx,
+		func(ctx *gin.Context, account model.Account) {
+			core.DeleteTotp(account)
+			ctx.JSON(http.StatusNoContent, "")
+		})
+}
+
 // GetAuthentication implements coreapi.AccountApiInterface.
 func (AccountApi) GetAuthentication(ctx *gin.Context, email string) {
 	if email == "" {

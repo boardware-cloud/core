@@ -3,27 +3,27 @@ module github.com/boardware-cloud/core
 go 1.20
 
 require (
+	github.com/boardware-cloud/middleware v0.0.0-20230829025449-ec805dc98d41
 	github.com/gin-gonic/gin v1.9.1
+	github.com/go-webauthn/webauthn v0.8.6
+	github.com/pquerna/otp v1.4.0
+	github.com/spf13/viper v1.16.0
 	gorm.io/gorm v1.25.4
 )
 
 require (
-	github.com/boardware-cloud/middleware v0.0.0-20230829025449-ec805dc98d41 // indirect
 	github.com/boombuler/barcode v1.0.1 // indirect
-	github.com/fxamacker/cbor/v2 v2.4.0 // indirect
-	github.com/go-webauthn/webauthn v0.8.6 // indirect
+	github.com/fxamacker/cbor/v2 v2.5.0 // indirect
 	github.com/go-webauthn/x v0.1.4 // indirect
 	github.com/golang-jwt/jwt/v5 v5.0.0 // indirect
 	github.com/google/go-tpm v0.9.0 // indirect
-	github.com/google/uuid v1.3.0 // indirect
-	github.com/pquerna/otp v1.4.0 // indirect
-	github.com/spf13/viper v1.16.0 // indirect
+	github.com/google/uuid v1.3.1 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 )
 
 require (
 	github.com/boardware-cloud/common v0.0.0-20230904014321-2ff62cff268d
-	github.com/boardware-cloud/core-api v0.0.0-20230905030213-372c40d13115
+	github.com/boardware-cloud/core-api v0.0.0-20230906041856-1c54e33983df
 	github.com/boardware-cloud/model v0.0.0-20230902092321-ff412115ffbf
 	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/bytedance/sonic v1.10.0 // indirect
@@ -59,8 +59,8 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	golang.org/x/arch v0.5.0 // indirect
-	golang.org/x/crypto v0.12.0 // indirect
-	golang.org/x/net v0.14.0 // indirect
+	golang.org/x/crypto v0.13.0 // indirect
+	golang.org/x/net v0.15.0 // indirect
 	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect

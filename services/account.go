@@ -72,6 +72,11 @@ func CreateTotp(account core.Account) string {
 	return key.String()
 }
 
+func DeleteTotp(account core.Account) {
+	account.Totp = nil
+	DB.Save(&account)
+}
+
 func CreateSessionWithTickets(email string, tokens []string) (*Session, *errors.Error) {
 	var account core.Account
 	ctx := DB.Find(&account, "email = ?", email)

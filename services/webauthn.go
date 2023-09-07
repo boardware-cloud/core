@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/boardware-cloud/common/code"
 	"github.com/boardware-cloud/common/errors"
 	"github.com/boardware-cloud/model/core"
 	"github.com/go-webauthn/webauthn/protocol"
@@ -75,10 +76,10 @@ func FinishRegistration(account core.Account, sessionId uint, name, os string, c
 	return nil
 }
 
-func BeginLogin(account core.Account) (*protocol.CredentialAssertion, *core.SessionData, *errors.Error) {
+func BeginLogin(account core.Account) (*protocol.CredentialAssertion, *core.SessionData, error) {
 	options, session, err := authn.BeginLogin(account)
 	if err != nil {
-		return nil, nil, errors.NotFoundError()
+		return nil, nil, code.ErrUnauthorized
 	}
 	sessionData := core.SessionData{
 		AccountId: account.ID,
@@ -88,17 +89,17 @@ func BeginLogin(account core.Account) (*protocol.CredentialAssertion, *core.Sess
 	return options, &sessionData, nil
 }
 
-func FinishLogin(sessionId uint, car *protocol.ParsedCredentialAssertionData) (string, *errors.Error) {
+func FinishLogin(sessionId uint, car *protocol.ParsedCredentialAssertionData) (string, error) {
 	var session core.SessionData
 	ctx := DB.Find(&session, sessionId)
 	if ctx.RowsAffected == 0 {
-		return "", errors.NotFoundError()
+		return "", code.ErrUnauthorized
 	}
-	account, errg := core.GetAccount(session.AccountId)
-	if errg != nil {
-		return "", errg
+	account, err := core.GetAccount(session.AccountId)
+	if err != nil {
+		return "", err
 	}
-	_, err := authn.ValidateLogin(account, webauthn.SessionData(session.Data), car)
+	_, err = authn.ValidateLogin(account, webauthn.SessionData(session.Data), car)
 	if err != nil {
 		return "", errors.AuthenticationError()
 	}

@@ -2,15 +2,15 @@ package controllers
 
 import (
 	"encoding/json"
+	"net/http"
 
+	"github.com/boardware-cloud/common/code"
 	"github.com/boardware-cloud/common/constants/authenication"
 	"github.com/boardware-cloud/common/errors"
 	api "github.com/boardware-cloud/core-api"
 	core "github.com/boardware-cloud/core/services"
 	"github.com/chenyunda218/golambda"
 	"github.com/go-webauthn/webauthn/protocol"
-
-	"net/http"
 
 	"github.com/boardware-cloud/common/constants"
 	"github.com/boardware-cloud/common/utils"
@@ -66,11 +66,12 @@ func (AccountApi) CreateWebauthnTickets(ctx *gin.Context, id string) {
 	if err != nil {
 		return
 	}
-	ticket, errg := core.FinishLogin(utils.StringToUint(id), response)
-	if errg != nil {
-		errg.GinHandler(ctx)
+	ticket, err := core.FinishLogin(utils.StringToUint(id), response)
+	if err != nil {
+		code.GinHandler(ctx, err)
 		return
 	}
+
 	ctx.JSON(http.StatusCreated, api.Ticket{
 		Token: ticket,
 		Type:  api.WEBAUTHN,
@@ -97,12 +98,12 @@ func (AccountApi) ListWebAuthn(ctx *gin.Context) {
 func (AccountApi) CreateWebauthnTicketChallenge(ctx *gin.Context, request api.CreateTicketChallenge) {
 	account, err := model.GetAccountByEmail(request.Email)
 	if err != nil {
-		err.GinHandler(ctx)
+		code.GinHandler(ctx, err)
 		return
 	}
 	option, session, err := core.BeginLogin(account)
 	if err != nil {
-		err.GinHandler(ctx)
+		code.GinHandler(ctx, err)
 		return
 	}
 	ctx.JSON(http.StatusCreated, gin.H{
@@ -261,18 +262,12 @@ func (AccountApi) ListAccount(ctx *gin.Context, ordering api.Ordering, index int
 		})
 }
 
-func (AccountApi) GetAccount(c *gin.Context) {
-	auth := middleware.Authorize(c)
-	if auth.Status != middleware.Authorized {
-		errors.UnauthorizedError().GinHandler(c)
-		return
-	}
-	account := core.GetAccountById(auth.AccountId)
-	if account == nil {
-		errors.NotFoundError().GinHandler(c)
-		return
-	}
-	c.JSON(http.StatusOK, AccountBackward(*account))
+func (AccountApi) GetAccount(ctx *gin.Context) {
+	middleware.GetAccount(ctx,
+		func(c *gin.Context, a model.Account) {
+			account := core.GetAccountById(a.ID)
+			c.JSON(http.StatusOK, AccountBackward(*account))
+		})
 }
 
 func (AccountApi) GetAccountById(id string) *api.Account {

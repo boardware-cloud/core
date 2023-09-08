@@ -3,6 +3,7 @@ package services
 import (
 	"time"
 
+	errorCode "github.com/boardware-cloud/common/code"
 	"github.com/boardware-cloud/common/constants"
 	"github.com/boardware-cloud/common/constants/authenication"
 	"github.com/boardware-cloud/common/errors"
@@ -33,7 +34,6 @@ type Session struct {
 	ExpiredAt   int64                 `json:"expiredAt"`
 	CreatedAt   int64                 `json:"createdAt"`
 	Status      SessionStatus         `json:"status"`
-	FA          []string              `json:"FA"`
 }
 
 func (a Account) Forward() core.Account {
@@ -78,27 +78,22 @@ func DeleteTotp(account core.Account) {
 	DB.Save(&account)
 }
 
-func CreateSessionWithTickets(email string, tokens []string) (*Session, *errors.Error) {
+func CreateSessionWithTickets(email string, tokens []string) (*Session, error) {
 	var account core.Account
 	ctx := DB.Find(&account, "email = ?", email)
 	if ctx.RowsAffected == 0 {
-		return nil, errors.AuthenticationError()
+		return nil, errorCode.ErrNotFound
 	}
 	var loginRecord core.LoginRecord
 	DB.Where("account_id = ?", account.ID).Order("created_at DESC").Limit(1).Find(&loginRecord)
 	if time.Now().UnixMilli()-loginRecord.CreatedAt.UnixMilli() <= 250 {
-		return nil, errors.TooManyRequestsError()
+		return nil, errorCode.ErrTooManyRequests
 	}
 	DB.Save(&core.LoginRecord{AccountId: account.ID})
 	err := NFactor(account, tokens, 2)
 	if err != nil {
-		FA := []string{"PASSWORD", "EMAIL"}
-		if account.Totp != nil {
-			FA = append(FA, "TOTP")
-		}
 		return &Session{
 			Status: "TWO_FA",
-			FA:     FA,
 		}, nil
 	}
 	expiredAt := time.Now().AddDate(0, 0, 7).Unix()
@@ -137,25 +132,24 @@ func GetAuthenticationFactors(email string) []authenication.AuthenticationFactor
 	return factors
 }
 
-func CreateSession(email string, password, verificationCode, totpCode *string) (*Session, *errors.Error) {
+func CreateSession(email string, password, verificationCode, totpCode *string) (*Session, error) {
 	var account core.Account
 	ctx := DB.Find(&account, "email = ?", email)
-	fa := 2
 	authed := 0
 	if ctx.RowsAffected == 0 {
-		return nil, errors.AuthenticationError()
+		return nil, errorCode.ErrUnauthorized
 	}
 	var loginRecord core.LoginRecord
 	DB.Where("account_id = ?", account.ID).Order("created_at DESC").Limit(1).Find(&loginRecord)
 	if time.Now().Unix()-loginRecord.CreatedAt.Unix() <= 1 {
-		return nil, errors.TooManyRequestsError()
+		return nil, errorCode.ErrTooManyRequests
 	}
 	DB.Save(&core.LoginRecord{AccountId: account.ID})
 	if password != nil {
 		if utils.PasswordsMatch(account.Password, *password, account.Salt) {
 			authed++
 		} else {
-			return nil, errors.AuthenticationError()
+			return nil, errorCode.ErrUnauthorized
 		}
 	}
 	if verificationCode != nil {
@@ -163,7 +157,7 @@ func CreateSession(email string, password, verificationCode, totpCode *string) (
 		if verify(code, *verificationCode) {
 			authed++
 		} else {
-			return nil, errors.VerificationCodeError()
+			return nil, errorCode.ErrVerificationCode
 		}
 	}
 	if totpCode != nil && account.Totp != nil {
@@ -171,16 +165,6 @@ func CreateSession(email string, password, verificationCode, totpCode *string) (
 		if totp.Validate(*totpCode, key.Secret()) {
 			authed++
 		}
-	}
-	if authed < fa {
-		FA := []string{"PASSWORD", "EMAIL"}
-		if account.Totp != nil {
-			FA = append(FA, "TOTP")
-		}
-		return &Session{
-			Status: "TWO_FA",
-			FA:     FA,
-		}, nil
 	}
 	expiredAt := time.Now().AddDate(0, 0, 7).Unix()
 	token, _ := utils.SignJwt(
@@ -201,11 +185,9 @@ func CreateSession(email string, password, verificationCode, totpCode *string) (
 	}, nil
 }
 
-func CreateAccount(email, password string, role constants.Role) (*Account, *errors.Error) {
-	var accounts []core.Account
-	DB.Find(&accounts, "email = ?", email)
-	if len(accounts) > 0 {
-		return nil, errors.EmailExists()
+func CreateAccount(email, password string, role constants.Role) (*Account, error) {
+	if ctx := DB.Find(&core.Account{}, "email = ?", email); ctx.RowsAffected != 0 {
+		return nil, errorCode.ErrEmailExists
 	}
 	hashed, salt := utils.HashWithSalt(password)
 	account := Account{
@@ -242,7 +224,7 @@ func GetAccountByEmail(email string) *Account {
 	return account.Backward(coreAccount)
 }
 
-func CreateAccountWithVerificationCode(email, code, password string) (*Account, *errors.Error) {
+func CreateAccountWithVerificationCode(email, code, password string) (*Account, error) {
 	verificationCode := GetVerification(email, constants.CREATE_ACCOUNT)
 	if !verify(verificationCode, code) {
 		return nil, errors.VerificationCodeError()
@@ -258,11 +240,11 @@ func SetPassword(account core.Account, newPassword string) {
 	DB.Save(&account)
 }
 
-func UpdatePassword(email string, password *string, code *string, newPassword string) *errors.Error {
+func UpdatePassword(email string, password *string, code *string, newPassword string) error {
 	var account core.Account
 	ctx := DB.Where("email = ?", email).Find(&account)
 	if ctx.RowsAffected == 0 {
-		return errors.NotFoundError()
+		return errorCode.ErrNotFound
 	}
 	if password != nil {
 		if !utils.PasswordsMatch(account.Password, *password, account.Salt) {
@@ -274,13 +256,13 @@ func UpdatePassword(email string, password *string, code *string, newPassword st
 	if code != nil {
 		verificationCode := GetVerification(email, constants.SET_PASSWORD)
 		if !verify(verificationCode, *code) {
-			return errors.VerificationCodeError()
+			return errorCode.ErrVerificationCode
 		}
 		DB.Delete(verificationCode)
 		SetPassword(account, newPassword)
 		return nil
 	}
-	return errors.VerificationCodeError()
+	return errorCode.ErrVerificationCode
 }
 
 func ListAccount(index, limit int64) common.List[Account] {

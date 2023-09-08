@@ -183,7 +183,7 @@ func (AccountApi) CreateSession(c *gin.Context, createSessionRequest api.CreateS
 	if createSessionRequest.Tickets != nil {
 		session, sessionError := core.CreateSessionWithTickets(*createSessionRequest.Email, *createSessionRequest.Tickets)
 		if sessionError != nil {
-			sessionError.GinHandler(c)
+			code.GinHandler(c, sessionError)
 			return
 		}
 		c.JSON(http.StatusCreated, api.Token{
@@ -201,20 +201,13 @@ func (AccountApi) CreateAccount(c *gin.Context, createAccountRequest api.CreateA
 			*createAccountRequest.VerificationCode,
 			createAccountRequest.Password)
 		if createError != nil {
-			createError.GinHandler(c)
+			code.GinHandler(c, createError)
 			return
 		}
 		c.JSON(http.StatusCreated, AccountBackward(*a))
 		return
 	}
 	middleware.IsRoot(c, func(_ *gin.Context, _ model.Account) {
-		var createAccountRequest api.CreateAccountRequest
-		err := c.ShouldBindJSON(&createAccountRequest)
-		if err != nil {
-			// TODO: Error message
-			c.JSON(http.StatusBadRequest, "")
-			return
-		}
 		role := constants.USER
 		if createAccountRequest.Role != nil {
 			role = constants.Role(*createAccountRequest.Role)
@@ -225,7 +218,7 @@ func (AccountApi) CreateAccount(c *gin.Context, createAccountRequest api.CreateA
 			role,
 		)
 		if createError != nil {
-			createError.GinHandler(c)
+			code.GinHandler(c, createError)
 			return
 		}
 		c.JSON(http.StatusCreated, AccountBackward(*a))
@@ -290,7 +283,7 @@ func (a AccountApi) VerifySession(c *gin.Context, sessionVerificationRequest api
 func (AccountApi) UpdatePassword(c *gin.Context, request api.UpdatePasswordRequest) {
 	err := core.UpdatePassword(request.Email, request.Password, request.VerificationCode, request.NewPassword)
 	if err != nil {
-		err.GinHandler(c)
+		code.GinHandler(c, err)
 		return
 	}
 	c.String(http.StatusNoContent, "")

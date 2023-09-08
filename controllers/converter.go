@@ -24,7 +24,6 @@ func SessionBackward(session core.Session) api.Session {
 		TokenFormat: string(session.TokenFormat),
 		ExpiredAt:   session.ExpiredAt,
 		Status:      api.SessionStatus(session.Status),
-		Fa:          session.FA,
 	}
 }
 

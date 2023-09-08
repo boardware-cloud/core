@@ -186,19 +186,11 @@ func (AccountApi) CreateSession(c *gin.Context, createSessionRequest api.CreateS
 			sessionError.GinHandler(c)
 			return
 		}
-		c.JSON(http.StatusCreated, SessionBackward(*session))
-	} else {
-		session, sessionError := core.CreateSession(
-			*createSessionRequest.Email,
-			createSessionRequest.Password,
-			createSessionRequest.VerificationCode,
-			createSessionRequest.TotpCode,
-		)
-		if sessionError != nil {
-			sessionError.GinHandler(c)
-			return
-		}
-		c.JSON(http.StatusCreated, SessionBackward(*session))
+		c.JSON(http.StatusCreated, api.Token{
+			Secret:      session.Token,
+			TokenType:   "JWT",
+			TokenFormat: "bearer",
+		})
 	}
 }
 

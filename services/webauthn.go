@@ -1,8 +1,7 @@
 package services
 
 import (
-	"github.com/boardware-cloud/common/code"
-	"github.com/boardware-cloud/common/errors"
+	errorCode "github.com/boardware-cloud/common/code"
 	"github.com/boardware-cloud/model/core"
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
@@ -33,10 +32,10 @@ func init() {
 	}
 }
 
-func DeleteWebAuthn(account core.Account, id uint) *errors.Error {
+func DeleteWebAuthn(account core.Account, id uint) error {
 	ctx := DB.Where("account_id = ? AND id = ?", account.ID, id).Delete(&core.Credential{})
 	if ctx.RowsAffected == 0 {
-		return errors.NotFoundError()
+		return errorCode.ErrNotFound
 	}
 	return nil
 }
@@ -57,19 +56,19 @@ func BeginRegistration(account core.Account) (*protocol.CredentialCreation, core
 	return options, sessionData
 }
 
-func FinishRegistration(account core.Account, sessionId uint, name, os string, ccr protocol.CredentialCreationResponse) *errors.Error {
+func FinishRegistration(account core.Account, sessionId uint, name, os string, ccr protocol.CredentialCreationResponse) error {
 	response, err := ccr.Parse()
 	if err != nil {
-		return errors.AuthenticationError()
+		return errorCode.ErrUnauthorized
 	}
 	var session core.SessionData
 	ctx := DB.Find(&session, sessionId)
 	if ctx.RowsAffected == 0 {
-		return errors.NotFoundError()
+		return errorCode.ErrNotFound
 	}
 	user, err := authn.CreateCredential(account, webauthn.SessionData(session.Data), response)
 	if err != nil {
-		return errors.AuthenticationError()
+		return errorCode.ErrUnauthorized
 	}
 	credential := core.Credential{AccountId: account.ID, Name: name, Os: os, Credential: core.WebAuthnCredential(*user)}
 	DB.Save(&credential)
@@ -79,7 +78,7 @@ func FinishRegistration(account core.Account, sessionId uint, name, os string, c
 func BeginLogin(account core.Account) (*protocol.CredentialAssertion, *core.SessionData, error) {
 	options, session, err := authn.BeginLogin(account)
 	if err != nil {
-		return nil, nil, code.ErrUnauthorized
+		return nil, nil, errorCode.ErrUnauthorized
 	}
 	sessionData := core.SessionData{
 		AccountId: account.ID,
@@ -93,7 +92,7 @@ func FinishLogin(sessionId uint, car *protocol.ParsedCredentialAssertionData) (s
 	var session core.SessionData
 	ctx := DB.Find(&session, sessionId)
 	if ctx.RowsAffected == 0 {
-		return "", code.ErrUnauthorized
+		return "", errorCode.ErrUnauthorized
 	}
 	account, err := core.GetAccount(session.AccountId)
 	if err != nil {
@@ -101,7 +100,7 @@ func FinishLogin(sessionId uint, car *protocol.ParsedCredentialAssertionData) (s
 	}
 	_, err = authn.ValidateLogin(account, webauthn.SessionData(session.Data), car)
 	if err != nil {
-		return "", errors.AuthenticationError()
+		return "", errorCode.ErrUnauthorized
 	}
 	return TicketString(createTicket("WEBAUTHN", account.ID)), nil
 }

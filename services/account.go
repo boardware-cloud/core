@@ -3,10 +3,10 @@ package services
 import (
 	"time"
 
+	"github.com/boardware-cloud/common/code"
 	errorCode "github.com/boardware-cloud/common/code"
 	"github.com/boardware-cloud/common/constants"
 	"github.com/boardware-cloud/common/constants/authenication"
-	"github.com/boardware-cloud/common/errors"
 	"github.com/boardware-cloud/common/utils"
 	"github.com/boardware-cloud/model/common"
 	"github.com/boardware-cloud/model/core"
@@ -52,13 +52,13 @@ func (a *Account) Backward(account core.Account) *Account {
 	return a
 }
 
-func UpdateTotp2FA(account core.Account, url, totpCode string) (string, *errors.Error) {
+func UpdateTotp2FA(account core.Account, url, totpCode string) (string, error) {
 	key, err := otp.NewKeyFromURL(url)
 	if err != nil {
-		return "", errors.UndefineError("TOTP url error")
+		return "", code.ErrUnauthorized
 	}
 	if !totp.Validate(totpCode, key.Secret()) {
-		return "", errors.AuthenticationError()
+		return "", code.ErrUnauthorized
 	}
 	account.Totp = &url
 	DB.Save(&account)
@@ -227,13 +227,13 @@ func GetAccountByEmail(email string) *Account {
 func CreateAccountWithVerificationCode(email, code, password string) (*Account, error) {
 	verificationCode := GetVerification(email, constants.CREATE_ACCOUNT)
 	if !verify(verificationCode, code) {
-		return nil, errors.VerificationCodeError()
+		return nil, errorCode.ErrVerificationCode
 	}
 	DB.Delete(&verificationCode)
 	return CreateAccount(email, password, constants.USER)
 }
 
-func SetPassword(account core.Account, newPassword string) {
+func setPassword(account core.Account, newPassword string) {
 	hashed, salt := utils.HashWithSalt(newPassword)
 	account.Password = hashed
 	account.Salt = salt
@@ -248,9 +248,9 @@ func UpdatePassword(email string, password *string, code *string, newPassword st
 	}
 	if password != nil {
 		if !utils.PasswordsMatch(account.Password, *password, account.Salt) {
-			return errors.AuthenticationError()
+			return errorCode.ErrUnauthorized
 		}
-		SetPassword(account, newPassword)
+		setPassword(account, newPassword)
 		return nil
 	}
 	if code != nil {
@@ -259,7 +259,7 @@ func UpdatePassword(email string, password *string, code *string, newPassword st
 			return errorCode.ErrVerificationCode
 		}
 		DB.Delete(verificationCode)
-		SetPassword(account, newPassword)
+		setPassword(account, newPassword)
 		return nil
 	}
 	return errorCode.ErrVerificationCode
@@ -281,19 +281,19 @@ func verify(v *core.VerificationCode, code string) bool {
 	return true
 }
 
-func NFactor(account core.Account, tokens []string, factor int) *errors.Error {
+func NFactor(account core.Account, tokens []string, factor int) error {
 	var fa map[string]bool = make(map[string]bool)
 	for _, token := range tokens {
 		ticket, err := UseTicket(token)
 		if err != nil {
-			return errors.AuthenticationError()
+			return code.ErrUnauthorized
 		}
 		if ticket.AccountId == account.ID {
 			fa[ticket.Type] = true
 		}
 	}
 	if len(fa) < factor {
-		return errors.AuthenticationError()
+		return code.ErrUnauthorized
 	}
 	return nil
 }

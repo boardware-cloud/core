@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 
+	errorCode "github.com/boardware-cloud/common/code"
 	"github.com/boardware-cloud/common/constants"
 	api "github.com/boardware-cloud/core-api"
 	"github.com/boardware-cloud/core/services"
@@ -23,7 +24,7 @@ func (VerificationApi) CreateVerificationCode(c *gin.Context, request api.Create
 	}
 	err := services.CreateVerificationCode(*request.Email, purpose)
 	if err != nil {
-		err.GinHandler(c)
+		errorCode.GinHandler(c, err)
 		return
 	}
 	c.JSON(http.StatusCreated, api.CreateVerificationCodeRespones{

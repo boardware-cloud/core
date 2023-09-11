@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/boardware-cloud/common/code"
+	errorCode "github.com/boardware-cloud/common/code"
 	"github.com/boardware-cloud/common/constants/authenication"
-	"github.com/boardware-cloud/common/errors"
 	api "github.com/boardware-cloud/core-api"
 	core "github.com/boardware-cloud/core/services"
 	"github.com/chenyunda218/golambda"
@@ -34,12 +33,12 @@ func (AccountApi) DeleteTotp(ctx *gin.Context) {
 // GetAuthentication implements coreapi.AccountApiInterface.
 func (AccountApi) GetAuthentication(ctx *gin.Context, email string) {
 	if email == "" {
-		errors.NotFoundError().GinHandler(ctx)
+		errorCode.GinHandler(ctx, errorCode.ErrNotFound)
 		return
 	}
 	factors := core.GetAuthenticationFactors(email)
 	if len(factors) == 0 {
-		errors.NotFoundError().GinHandler(ctx)
+		errorCode.GinHandler(ctx, errorCode.ErrNotFound)
 		return
 	}
 	ctx.JSON(http.StatusOK, api.Authentication{Factors: golambda.Map(factors,
@@ -53,7 +52,7 @@ func (AccountApi) DeleteWebAuthn(ctx *gin.Context, id string) {
 	middleware.GetAccount(ctx, func(c *gin.Context, account model.Account) {
 		err := core.DeleteWebAuthn(account, utils.StringToUint(id))
 		if err != nil {
-			err.GinHandler(ctx)
+			errorCode.GinHandler(ctx, err)
 			return
 		}
 		ctx.JSON(http.StatusNoContent, "")
@@ -68,7 +67,7 @@ func (AccountApi) CreateWebauthnTickets(ctx *gin.Context, id string) {
 	}
 	ticket, err := core.FinishLogin(utils.StringToUint(id), response)
 	if err != nil {
-		code.GinHandler(ctx, err)
+		errorCode.GinHandler(ctx, err)
 		return
 	}
 
@@ -98,12 +97,12 @@ func (AccountApi) ListWebAuthn(ctx *gin.Context) {
 func (AccountApi) CreateWebauthnTicketChallenge(ctx *gin.Context, request api.CreateTicketChallenge) {
 	account, err := model.GetAccountByEmail(request.Email)
 	if err != nil {
-		code.GinHandler(ctx, err)
+		errorCode.GinHandler(ctx, err)
 		return
 	}
 	option, session, err := core.BeginLogin(account)
 	if err != nil {
-		code.GinHandler(ctx, err)
+		errorCode.GinHandler(ctx, err)
 		return
 	}
 	ctx.JSON(http.StatusCreated, gin.H{
@@ -145,7 +144,7 @@ func (AccountApi) CreateWebauthn(ctx *gin.Context, id string) {
 				ccr.Name,
 				ccr.Os,
 				ccr.CredentialCreationResponse); err != nil {
-				err.GinHandler(ctx)
+				errorCode.GinHandler(ctx, err)
 				return
 			}
 			ctx.JSON(http.StatusCreated, "")
@@ -163,14 +162,16 @@ func (AccountApi) GetTotp(c *gin.Context) {
 // CreateTotp2FA implements coreapi.AccountApiInterface.
 func (AccountApi) CreateTotp2FA(c *gin.Context, request api.PutTotpRequest) {
 	middleware.GetAccount(c, func(c *gin.Context, account model.Account) {
-		err := core.NFactor(account, request.Tickets, 1)
+		var err error
+		err = core.NFactor(account, request.Tickets, 1)
 		if err != nil {
-			err.GinHandler(c)
+			errorCode.GinHandler(c, err)
 			return
 		}
-		url, err := core.UpdateTotp2FA(account, request.Url, request.TotpCode)
+		var url string
+		url, err = core.UpdateTotp2FA(account, request.Url, request.TotpCode)
 		if err != nil {
-			err.GinHandler(c)
+			errorCode.GinHandler(c, err)
 			return
 		}
 		c.JSON(http.StatusOK, api.Totp{
@@ -183,7 +184,7 @@ func (AccountApi) CreateSession(c *gin.Context, createSessionRequest api.CreateS
 	if createSessionRequest.Tickets != nil {
 		session, sessionError := core.CreateSessionWithTickets(*createSessionRequest.Email, *createSessionRequest.Tickets)
 		if sessionError != nil {
-			code.GinHandler(c, sessionError)
+			errorCode.GinHandler(c, sessionError)
 			return
 		}
 		c.JSON(http.StatusCreated, api.Token{
@@ -201,7 +202,7 @@ func (AccountApi) CreateAccount(c *gin.Context, createAccountRequest api.CreateA
 			*createAccountRequest.VerificationCode,
 			createAccountRequest.Password)
 		if createError != nil {
-			code.GinHandler(c, createError)
+			errorCode.GinHandler(c, createError)
 			return
 		}
 		c.JSON(http.StatusCreated, AccountBackward(*a))
@@ -218,7 +219,7 @@ func (AccountApi) CreateAccount(c *gin.Context, createAccountRequest api.CreateA
 			role,
 		)
 		if createError != nil {
-			code.GinHandler(c, createError)
+			errorCode.GinHandler(c, createError)
 			return
 		}
 		c.JSON(http.StatusCreated, AccountBackward(*a))
@@ -267,7 +268,7 @@ func (AccountApi) GetAccountById(id string) *api.Account {
 func (a AccountApi) VerifySession(c *gin.Context, sessionVerificationRequest api.SessionVerificationRequest) {
 	auth := middleware.Authorize(c)
 	if auth.Status != middleware.Authorized {
-		errors.UnauthorizedError().GinHandler(c)
+		errorCode.GinHandler(c, errorCode.ErrUnauthorized)
 		return
 	}
 	account := a.GetAccountById(utils.UintToString(auth.AccountId))
@@ -283,7 +284,7 @@ func (a AccountApi) VerifySession(c *gin.Context, sessionVerificationRequest api
 func (AccountApi) UpdatePassword(c *gin.Context, request api.UpdatePasswordRequest) {
 	err := core.UpdatePassword(request.Email, request.Password, request.VerificationCode, request.NewPassword)
 	if err != nil {
-		code.GinHandler(c, err)
+		errorCode.GinHandler(c, err)
 		return
 	}
 	c.String(http.StatusNoContent, "")

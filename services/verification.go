@@ -6,8 +6,8 @@ import (
 	"text/template"
 	"time"
 
+	errorCode "github.com/boardware-cloud/common/code"
 	"github.com/boardware-cloud/common/constants"
-	"github.com/boardware-cloud/common/errors"
 	model "github.com/boardware-cloud/model/core"
 )
 
@@ -23,13 +23,13 @@ func GetVerification(identity string, purpose constants.VerificationCodePurpose)
 	return &verificationCode
 }
 
-func CreateVerificationCode(identity string, purpose constants.VerificationCodePurpose) *errors.Error {
+func CreateVerificationCode(identity string, purpose constants.VerificationCodePurpose) error {
 	ctx := DB.Where("email = ?", identity).Find(&model.Account{})
 	if purpose == constants.CREATE_ACCOUNT && ctx.RowsAffected != 0 {
-		return errors.EmailExists()
+		return errorCode.ErrEmailExists
 	}
 	if purpose == constants.SET_PASSWORD && ctx.RowsAffected == 0 {
-		return errors.NotFoundError()
+		return errorCode.ErrNotFound
 	}
 	var verificationCode model.VerificationCode
 	ctx = DB.Where("identity = ? AND purpose = ?",
@@ -51,12 +51,12 @@ func CreateVerificationCode(identity string, purpose constants.VerificationCodeP
 		err := emailSender.SendHtml("", "Boardware Cloud verification code",
 			htmlString.String(), []string{identity}, []string{}, []string{})
 		if err != nil {
-			return errors.UndefineError(err.Error())
+			return errorCode.ErrUndefined
 		}
 		DB.Save(&newCode)
 		return nil
 	}
-	return errors.VerificationCodeFrequent()
+	return errorCode.ErrTooManyRequests
 }
 
 const charset = "0123456789"

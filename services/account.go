@@ -3,7 +3,6 @@ package services
 import (
 	"time"
 
-	"github.com/boardware-cloud/common/code"
 	errorCode "github.com/boardware-cloud/common/code"
 	"github.com/boardware-cloud/common/constants"
 	"github.com/boardware-cloud/common/constants/authenication"
@@ -55,10 +54,10 @@ func (a *Account) Backward(account core.Account) *Account {
 func UpdateTotp2FA(account core.Account, url, totpCode string) (string, error) {
 	key, err := otp.NewKeyFromURL(url)
 	if err != nil {
-		return "", code.ErrUnauthorized
+		return "", errorCode.ErrUnauthorized
 	}
 	if !totp.Validate(totpCode, key.Secret()) {
-		return "", code.ErrUnauthorized
+		return "", errorCode.ErrUnauthorized
 	}
 	account.Totp = &url
 	DB.Save(&account)
@@ -84,12 +83,10 @@ func CreateSessionWithTickets(email string, tokens []string) (*Session, error) {
 	if ctx.RowsAffected == 0 {
 		return nil, errorCode.ErrNotFound
 	}
-	var loginRecord core.LoginRecord
-	DB.Where("account_id = ?", account.ID).Order("created_at DESC").Limit(1).Find(&loginRecord)
-	if time.Now().UnixMilli()-loginRecord.CreatedAt.UnixMilli() <= 250 {
+	if !account.ColdDown(500) {
 		return nil, errorCode.ErrTooManyRequests
 	}
-	DB.Save(&core.LoginRecord{AccountId: account.ID})
+	account.CreateColdDown()
 	err := NFactor(account, tokens, 2)
 	if err != nil {
 		return &Session{
@@ -286,14 +283,14 @@ func NFactor(account core.Account, tokens []string, factor int) error {
 	for _, token := range tokens {
 		ticket, err := UseTicket(token)
 		if err != nil {
-			return code.ErrUnauthorized
+			return errorCode.ErrUnauthorized
 		}
 		if ticket.AccountId == account.ID {
 			fa[ticket.Type] = true
 		}
 	}
 	if len(fa) < factor {
-		return code.ErrUnauthorized
+		return errorCode.ErrUnauthorized
 	}
 	return nil
 }

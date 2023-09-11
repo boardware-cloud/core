@@ -19,6 +19,10 @@ func CreateTicket(email, ticketType string, password, verificationCode, totpCode
 	if ctx.RowsAffected == 0 {
 		return "", errorCode.ErrNotFound
 	}
+	if !account.ColdDown(500) {
+		return "", errorCode.ErrTooManyRequests
+	}
+	account.CreateColdDown()
 	switch ticketType {
 	case "PASSWORD":
 		if password != nil {

@@ -226,7 +226,7 @@ func (AccountApi) CreateAccount(c *gin.Context, createAccountRequest api.CreateA
 	})
 }
 
-func (AccountApi) ListAccount(ctx *gin.Context, ordering api.Ordering, index int64, limit int64) {
+func (AccountApi) ListAccount(ctx *gin.Context, ordering api.Ordering, index int64, limit int64, roles []string) {
 	middleware.IsRoot(ctx,
 		func(ctx *gin.Context, account model.Account) {
 			list := core.ListAccount(index, limit)
@@ -273,12 +273,10 @@ func (a AccountApi) VerifySession(c *gin.Context, sessionVerificationRequest api
 	}
 	account := a.GetAccountById(utils.UintToString(auth.AccountId))
 	if account == nil {
-		c.JSON(http.StatusUnauthorized, "")
+		errorCode.GinHandler(c, errorCode.ErrUnauthorized)
 		return
 	}
-	c.JSON(http.StatusOK, api.Session{
-		Account: *account,
-	})
+	c.JSON(http.StatusOK, api.Session{})
 }
 
 func (AccountApi) UpdatePassword(c *gin.Context, request api.UpdatePasswordRequest) {
@@ -289,5 +287,3 @@ func (AccountApi) UpdatePassword(c *gin.Context, request api.UpdatePasswordReque
 	}
 	c.String(http.StatusNoContent, "")
 }
-
-var accountApi AccountApi

@@ -13,6 +13,7 @@ func Init() {
 	router = gin.Default()
 	router.Use(server.CorsMiddleware())
 	middleware.Health(router)
+	var accountApi AccountApi
 	api.AccountApiInterfaceMounter(router, accountApi)
 	api.VerificationApiInterfaceMounter(router, verificationApi)
 	api.TicketApiInterfaceMounter(router, ticketApi)

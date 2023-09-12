@@ -46,6 +46,8 @@ github.com/boardware-cloud/core-api v0.0.0-20230907093140-8c629e4d3ab5 h1:1vxk/j
 github.com/boardware-cloud/core-api v0.0.0-20230907093140-8c629e4d3ab5/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
 github.com/boardware-cloud/core-api v0.0.0-20230908040025-be11b879386e h1:7yZcmEmLqawSTP1R7zEmRopgyAOTuXmKIrkPV2ZSEkc=
 github.com/boardware-cloud/core-api v0.0.0-20230908040025-be11b879386e/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
+github.com/boardware-cloud/core-api v0.0.0-20230912060004-f31167cd9387 h1:sUiHmUpOH4OjwI0C6E97DikXhrGVyKaimFaqTgDayQk=
+github.com/boardware-cloud/core-api v0.0.0-20230912060004-f31167cd9387/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
 github.com/boardware-cloud/middleware v0.0.0-20230907024424-0903d0d50c7a h1:WbANIqN+eFgJKz9vIQQC9jxdLlxW6z6PQhj6Cg+/m1Q=
 github.com/boardware-cloud/middleware v0.0.0-20230907024424-0903d0d50c7a/go.mod h1:gRYJwwdicEtjrHCD207NsdJktUdcOsw42gopZ4FJBh4=
 github.com/boardware-cloud/model v0.0.0-20230907080909-f27bafb13781 h1:mQlkdIyLBMXgsvPI0cQgNiOIlJnfBMFRaTugGbn69hk=
@@ -63,6 +65,8 @@ github.com/bytedance/sonic v1.5.0/go.mod h1:ED5hyg4y6t3/9Ku1R6dU/4KyJ48DZ4jPhfY1
 github.com/bytedance/sonic v1.10.0-rc/go.mod h1:ElCzW+ufi8qKqNW0FY314xriJhyJhuoJ3gFZdAHF7NM=
 github.com/bytedance/sonic v1.10.0 h1:qtNZduETEIWJVIyDl01BeNxur2rW9OwTQ/yBqFRkKEk=
 github.com/bytedance/sonic v1.10.0/go.mod h1:iZcSUejdk5aukTND/Eu/ivjQuEL0Cu9/rf50Hi0u/g4=
+github.com/bytedance/sonic v1.10.1 h1:7a1wuFXL1cMy7a3f7/VFcEtriuXQnUBhtoVfOZiaysc=
+github.com/bytedance/sonic v1.10.1/go.mod h1:iZcSUejdk5aukTND/Eu/ivjQuEL0Cu9/rf50Hi0u/g4=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/chenyunda218/golambda v0.0.0-20230809035428-25245dc9a8bd h1:qhuThxoSN7lTgesIpUEMskgPdUCXx4UFoIQ0ORzZKMU=
 github.com/chenyunda218/golambda v0.0.0-20230809035428-25245dc9a8bd/go.mod h1:y5nsHMdGETgO/+pFm3NOsQ8eNfsUheNNcqE3DeQZdiQ=

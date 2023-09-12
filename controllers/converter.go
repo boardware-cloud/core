@@ -18,12 +18,8 @@ func AccountBackward(account core.Account) api.Account {
 
 func SessionBackward(session core.Session) api.Session {
 	return api.Session{
-		Account:     AccountBackward(session.Account),
-		Token:       session.Token,
-		TokenType:   string(session.TokeType),
-		TokenFormat: string(session.TokenFormat),
-		ExpiredAt:   session.ExpiredAt,
-		Status:      api.SessionStatus(session.Status),
+		ExpiredAt: session.ExpiredAt,
+		Status:    api.SessionStatus(session.Status),
 	}
 }
 

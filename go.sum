@@ -48,6 +48,10 @@ github.com/boardware-cloud/core-api v0.0.0-20230908040025-be11b879386e h1:7yZcmE
 github.com/boardware-cloud/core-api v0.0.0-20230908040025-be11b879386e/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
 github.com/boardware-cloud/core-api v0.0.0-20230912060004-f31167cd9387 h1:sUiHmUpOH4OjwI0C6E97DikXhrGVyKaimFaqTgDayQk=
 github.com/boardware-cloud/core-api v0.0.0-20230912060004-f31167cd9387/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
+github.com/boardware-cloud/core-api v0.0.0-20230913013244-ca7ae3498ada h1:6sPrFsiozZ4Zk5uHV6sUXl6ZaUoetYzWq1cIDxN3Hkw=
+github.com/boardware-cloud/core-api v0.0.0-20230913013244-ca7ae3498ada/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
+github.com/boardware-cloud/core-api v0.0.0-20230913013903-d522c8b63ea1 h1:05kvMBkTxnNxg0ojlow++/EOOh9NBjgkBfiVwENktkA=
+github.com/boardware-cloud/core-api v0.0.0-20230913013903-d522c8b63ea1/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
 github.com/boardware-cloud/middleware v0.0.0-20230907024424-0903d0d50c7a h1:WbANIqN+eFgJKz9vIQQC9jxdLlxW6z6PQhj6Cg+/m1Q=
 github.com/boardware-cloud/middleware v0.0.0-20230907024424-0903d0d50c7a/go.mod h1:gRYJwwdicEtjrHCD207NsdJktUdcOsw42gopZ4FJBh4=
 github.com/boardware-cloud/model v0.0.0-20230907080909-f27bafb13781 h1:mQlkdIyLBMXgsvPI0cQgNiOIlJnfBMFRaTugGbn69hk=
@@ -113,6 +117,8 @@ github.com/go-playground/universal-translator v0.18.1 h1:Bcnm0ZwsGyWbCzImXv+pAJn
 github.com/go-playground/universal-translator v0.18.1/go.mod h1:xekY+UJKNuX9WP91TpwSH2VMlDf28Uj24BCp08ZFTUY=
 github.com/go-playground/validator/v10 v10.15.3 h1:S+sSpunYjNPDuXkWbK+x+bA7iXiW296KG4dL3X7xUZo=
 github.com/go-playground/validator/v10 v10.15.3/go.mod h1:9iXMNT7sEkjXb0I+enO7QXmzG6QCsPWY4zveKFVRSyU=
+github.com/go-playground/validator/v10 v10.15.4 h1:zMXza4EpOdooxPel5xDqXEdXG5r+WggpvnAKMsalBjs=
+github.com/go-playground/validator/v10 v10.15.4/go.mod h1:9iXMNT7sEkjXb0I+enO7QXmzG6QCsPWY4zveKFVRSyU=
 github.com/go-sql-driver/mysql v1.7.0/go.mod h1:OXbVy3sEdcQ2Doequ6Z5BW6fXNQTmx+9S1MCJN5yJMI=
 github.com/go-sql-driver/mysql v1.7.1 h1:lUIinVbN1DY0xBg0eMOzmmtGoHwWBbvnWubQUrtU8EI=
 github.com/go-sql-driver/mysql v1.7.1/go.mod h1:OXbVy3sEdcQ2Doequ6Z5BW6fXNQTmx+9S1MCJN5yJMI=

@@ -21,6 +21,18 @@ import (
 
 type AccountApi struct{}
 
+func (AccountApi) GetAccountById(ctx *gin.Context, id string) {
+	middleware.IsRoot(ctx,
+		func(ctx *gin.Context, account model.Account) {
+			a := GetAccountById(id)
+			if a == nil {
+				errorCode.GinHandler(ctx, errorCode.ErrNotFound)
+				return
+			}
+			ctx.JSON(http.StatusOK, a)
+		})
+}
+
 // DeleteTotp implements coreapi.AccountApiInterface.
 func (AccountApi) DeleteTotp(ctx *gin.Context) {
 	middleware.GetAccount(ctx,
@@ -226,7 +238,7 @@ func (AccountApi) CreateAccount(c *gin.Context, createAccountRequest api.CreateA
 	})
 }
 
-func (AccountApi) ListAccount(ctx *gin.Context, ordering api.Ordering, index int64, limit int64, roles []string) {
+func (AccountApi) ListAccount(ctx *gin.Context, ordering api.Ordering, index int64, limit int64, roles []string, email string) {
 	middleware.IsRoot(ctx,
 		func(ctx *gin.Context, account model.Account) {
 			list := core.ListAccount(index, limit)
@@ -256,7 +268,7 @@ func (AccountApi) GetAccount(ctx *gin.Context) {
 		})
 }
 
-func (AccountApi) GetAccountById(id string) *api.Account {
+func GetAccountById(id string) *api.Account {
 	account := core.GetAccountById(utils.StringToUint(id))
 	if account == nil {
 		return nil
@@ -271,7 +283,7 @@ func (a AccountApi) VerifySession(c *gin.Context, sessionVerificationRequest api
 		errorCode.GinHandler(c, errorCode.ErrUnauthorized)
 		return
 	}
-	account := a.GetAccountById(utils.UintToString(auth.AccountId))
+	account := GetAccountById(utils.UintToString(auth.AccountId))
 	if account == nil {
 		errorCode.GinHandler(c, errorCode.ErrUnauthorized)
 		return

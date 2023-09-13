@@ -1,6 +1,6 @@
 module github.com/boardware-cloud/core
 
-go 1.20
+go 1.21
 
 require (
 	github.com/boardware-cloud/middleware v0.0.0-20230907024424-0903d0d50c7a

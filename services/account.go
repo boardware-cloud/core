@@ -148,6 +148,7 @@ func CreateAccount(email, password string, role constants.Role) (*Account, error
 		account.Role = constants.USER
 	}
 	DB.Create(&account)
+	DB.Delete(&core.VerificationCode{Identity: email})
 	var back Account
 	return back.Backward(account), nil
 }

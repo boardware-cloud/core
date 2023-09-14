@@ -7,11 +7,11 @@ import (
 	"time"
 
 	errorCode "github.com/boardware-cloud/common/code"
-	accountConstants "github.com/boardware-cloud/common/constants/account"
+	constants "github.com/boardware-cloud/common/constants/account"
 	model "github.com/boardware-cloud/model/core"
 )
 
-func GetVerification(identity string, purpose accountConstants.VerificationCodePurpose) *model.VerificationCode {
+func GetVerification(identity string, purpose constants.VerificationCodePurpose) *model.VerificationCode {
 	var verificationCode model.VerificationCode
 	ctx := DB.Where("identity = ? AND purpose = ?",
 		identity,
@@ -23,12 +23,12 @@ func GetVerification(identity string, purpose accountConstants.VerificationCodeP
 	return &verificationCode
 }
 
-func CreateVerificationCode(identity string, purpose accountConstants.VerificationCodePurpose) error {
+func CreateVerificationCode(identity string, purpose constants.VerificationCodePurpose) error {
 	ctx := DB.Where("email = ?", identity).Find(&model.Account{})
-	if purpose == accountConstants.CREATE_ACCOUNT && ctx.RowsAffected != 0 {
+	if purpose == constants.CREATE_ACCOUNT && ctx.RowsAffected != 0 {
 		return errorCode.ErrEmailExists
 	}
-	if purpose == accountConstants.SET_PASSWORD && ctx.RowsAffected == 0 {
+	if purpose == constants.SET_PASSWORD && ctx.RowsAffected == 0 {
 		return errorCode.ErrNotFound
 	}
 	var verificationCode model.VerificationCode

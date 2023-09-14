@@ -42,10 +42,16 @@ github.com/boardware-cloud/common v0.0.0-20230911013217-032a52835521 h1:JdpHGD4C
 github.com/boardware-cloud/common v0.0.0-20230911013217-032a52835521/go.mod h1:Ztn+PIPt9IhKncTFySl6LOyMhCV+AseebVcV5dDE18Y=
 github.com/boardware-cloud/core-api v0.0.0-20230913013903-d522c8b63ea1 h1:05kvMBkTxnNxg0ojlow++/EOOh9NBjgkBfiVwENktkA=
 github.com/boardware-cloud/core-api v0.0.0-20230913013903-d522c8b63ea1/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
+github.com/boardware-cloud/core-api v0.0.0-20230914013539-2f6c4b5a1e43 h1:sfT7hOhDRkhdgFvUsziV2K28p/Xgscxob6Ta6oc2jww=
+github.com/boardware-cloud/core-api v0.0.0-20230914013539-2f6c4b5a1e43/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
+github.com/boardware-cloud/core-api v0.0.0-20230914021727-24f36f198fdf h1:S3DOo6hauApepIGWQxLpTl+t58NkIGF2JZTTE7oo5os=
+github.com/boardware-cloud/core-api v0.0.0-20230914021727-24f36f198fdf/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
 github.com/boardware-cloud/middleware v0.0.0-20230907024424-0903d0d50c7a h1:WbANIqN+eFgJKz9vIQQC9jxdLlxW6z6PQhj6Cg+/m1Q=
 github.com/boardware-cloud/middleware v0.0.0-20230907024424-0903d0d50c7a/go.mod h1:gRYJwwdicEtjrHCD207NsdJktUdcOsw42gopZ4FJBh4=
 github.com/boardware-cloud/model v0.0.0-20230911060925-e9a8ae9d812a h1:QU87QqUIGqdj7sRzqFmsm1gfYnagEr2QqD4iJKqvQB0=
 github.com/boardware-cloud/model v0.0.0-20230911060925-e9a8ae9d812a/go.mod h1:/RIa94mRgzKtOtRSfnv+G0g8r74btUjuTLpFS0g67z4=
+github.com/boardware-cloud/model v0.0.0-20230914013757-e946118fd144 h1:9zbPn90JXqujruSBrHMXQgfcLFnFcQ7BQyQho89eg4o=
+github.com/boardware-cloud/model v0.0.0-20230914013757-e946118fd144/go.mod h1:/RIa94mRgzKtOtRSfnv+G0g8r74btUjuTLpFS0g67z4=
 github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
 github.com/boombuler/barcode v1.0.1 h1:NDBbPmhS+EqABEs5Kg3n/5ZNjy73Pz7SIV+KCeqyXcs=
 github.com/boombuler/barcode v1.0.1/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=

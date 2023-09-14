@@ -21,6 +21,11 @@ import (
 
 type AccountApi struct{}
 
+// ListSession implements coreapi.AccountApiInterface.
+func (AccountApi) ListSession(gin_context *gin.Context) {
+	panic("unimplemented")
+}
+
 func (AccountApi) GetAccountById(ctx *gin.Context, id string) {
 	middleware.IsRoot(ctx,
 		func(ctx *gin.Context, account model.Account) {

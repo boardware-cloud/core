@@ -17,10 +17,11 @@ const EXPIRED_TIME = 60 * 5
 const MAX_TRIES = 10
 
 type Account struct {
-	ID      uint           `json:"id"`
-	Email   string         `json:"email"`
-	Role    constants.Role `json:"role"`
-	HasTotp bool           `json:"hasTotp"`
+	ID           uint           `json:"id"`
+	Email        string         `json:"email"`
+	Role         constants.Role `json:"role"`
+	HasTotp      bool           `json:"hasTotp"`
+	RegisteredOn time.Time      `json:"registeredOn"`
 }
 
 type SessionStatus string
@@ -48,6 +49,7 @@ func (a *Account) Backward(account core.Account) *Account {
 	a.ID = account.ID
 	a.Role = account.Role
 	a.HasTotp = (account.Totp != nil)
+	a.RegisteredOn = account.CreatedAt
 	return a
 }
 
@@ -127,59 +129,6 @@ func GetAuthenticationFactors(email string) []authenication.AuthenticationFactor
 		factors = append(factors, authenication.WEBAUTHN)
 	}
 	return factors
-}
-
-func CreateSession(email string, password, verificationCode, totpCode *string) (*Session, error) {
-	var account core.Account
-	ctx := DB.Find(&account, "email = ?", email)
-	authed := 0
-	if ctx.RowsAffected == 0 {
-		return nil, errorCode.ErrUnauthorized
-	}
-	var loginRecord core.LoginRecord
-	DB.Where("account_id = ?", account.ID).Order("created_at DESC").Limit(1).Find(&loginRecord)
-	if time.Now().Unix()-loginRecord.CreatedAt.Unix() <= 1 {
-		return nil, errorCode.ErrTooManyRequests
-	}
-	DB.Save(&core.LoginRecord{AccountId: account.ID})
-	if password != nil {
-		if utils.PasswordsMatch(account.Password, *password, account.Salt) {
-			authed++
-		} else {
-			return nil, errorCode.ErrUnauthorized
-		}
-	}
-	if verificationCode != nil {
-		code := GetVerification(email, constants.SIGNIN)
-		if verify(code, *verificationCode) {
-			authed++
-		} else {
-			return nil, errorCode.ErrVerificationCode
-		}
-	}
-	if totpCode != nil && account.Totp != nil {
-		key, _ := otp.NewKeyFromURL(*account.Totp)
-		if totp.Validate(*totpCode, key.Secret()) {
-			authed++
-		}
-	}
-	expiredAt := time.Now().AddDate(0, 0, 7).Unix()
-	token, _ := utils.SignJwt(
-		utils.UintToString(account.ID),
-		account.Email,
-		string(account.Role),
-		expiredAt,
-		"ACTIVED",
-	)
-	var a Account
-	a.Backward(account)
-	return &Session{
-		Account:     *a.Backward(account),
-		Token:       token,
-		TokenFormat: constants.JWT,
-		TokeType:    constants.BEARER,
-		ExpiredAt:   expiredAt,
-	}, nil
 }
 
 func CreateAccount(email, password string, role constants.Role) (*Account, error) {

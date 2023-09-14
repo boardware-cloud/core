@@ -4,7 +4,7 @@ import (
 	"time"
 
 	errorCode "github.com/boardware-cloud/common/code"
-	"github.com/boardware-cloud/common/constants"
+	constants "github.com/boardware-cloud/common/constants/account"
 	"github.com/boardware-cloud/common/constants/authenication"
 	"github.com/boardware-cloud/common/utils"
 	"github.com/boardware-cloud/model/common"
@@ -24,33 +24,13 @@ type Account struct {
 	RegisteredOn time.Time      `json:"registeredOn"`
 }
 
-type SessionStatus string
-
 type Session struct {
-	Account     Account               `json:"account"`
 	Token       string                `json:"token"`
 	TokeType    constants.TokenType   `json:"tokenType"`
 	TokenFormat constants.TokenFormat `json:"tokenFormat"`
 	ExpiredAt   int64                 `json:"expiredAt"`
 	CreatedAt   int64                 `json:"createdAt"`
-	Status      SessionStatus         `json:"status"`
-}
-
-func (a Account) Forward() core.Account {
-	return core.Account{
-		ID:    a.ID,
-		Email: a.Email,
-		Role:  a.Role,
-	}
-}
-
-func (a *Account) Backward(account core.Account) *Account {
-	a.Email = account.Email
-	a.ID = account.ID
-	a.Role = account.Role
-	a.HasTotp = (account.Totp != nil)
-	a.RegisteredOn = account.CreatedAt
-	return a
+	Status      string                `json:"status"`
 }
 
 func UpdateTotp2FA(account core.Account, url, totpCode string) (string, error) {
@@ -91,9 +71,7 @@ func CreateSessionWithTickets(email string, tokens []string) (*Session, error) {
 	account.CreateColdDown()
 	err := NFactor(account, tokens, 2)
 	if err != nil {
-		return &Session{
-			Status: "TWO_FA",
-		}, nil
+		return nil, errorCode.ErrUnauthorized
 	}
 	expiredAt := time.Now().AddDate(0, 0, 7).Unix()
 	token, _ := utils.SignJwt(
@@ -103,10 +81,7 @@ func CreateSessionWithTickets(email string, tokens []string) (*Session, error) {
 		expiredAt,
 		"ACTIVED",
 	)
-	var a Account
-	a.Backward(account)
 	return &Session{
-		Account:     *a.Backward(account),
 		Token:       token,
 		TokenFormat: constants.JWT,
 		TokeType:    constants.BEARER,
@@ -136,10 +111,7 @@ func CreateAccount(email, password string, role constants.Role) (*Account, error
 		return nil, errorCode.ErrEmailExists
 	}
 	hashed, salt := utils.HashWithSalt(password)
-	account := Account{
-		Email: email,
-		Role:  role,
-	}.Forward()
+	account := AccountForward(Account{Email: email, Role: role})
 	account.Password = hashed
 	account.Salt = salt
 	if role != "" {
@@ -149,8 +121,8 @@ func CreateAccount(email, password string, role constants.Role) (*Account, error
 	}
 	DB.Create(&account)
 	DB.Delete(&core.VerificationCode{Identity: email})
-	var back Account
-	return back.Backward(account), nil
+	back := AccountBackward(account)
+	return &back, nil
 }
 
 func GetAccountById(id uint) *Account {
@@ -158,8 +130,8 @@ func GetAccountById(id uint) *Account {
 	if ctx := DB.Find(&coreAccount, id); ctx.RowsAffected == 0 {
 		return nil
 	}
-	var account Account
-	return account.Backward(coreAccount)
+	account := AccountBackward(coreAccount)
+	return &account
 }
 
 func GetAccountByEmail(email string) *Account {
@@ -167,8 +139,8 @@ func GetAccountByEmail(email string) *Account {
 	if ctx := DB.Where("email = ?", email).Find(&coreAccount); ctx.RowsAffected == 0 {
 		return nil
 	}
-	var account Account
-	return account.Backward(coreAccount)
+	account := AccountBackward(coreAccount)
+	return &account
 }
 
 func CreateAccountWithVerificationCode(email, code, password string) (*Account, error) {
@@ -213,6 +185,10 @@ func UpdatePassword(email string, password *string, code *string, newPassword st
 		return nil
 	}
 	return errorCode.ErrVerificationCode
+}
+
+func UpdateUserRole(accountId, role constants.Role) {
+	// TODO:
 }
 
 func ListAccount(index, limit int64) common.List[Account] {

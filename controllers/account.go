@@ -11,7 +11,7 @@ import (
 	"github.com/chenyunda218/golambda"
 	"github.com/go-webauthn/webauthn/protocol"
 
-	"github.com/boardware-cloud/common/constants"
+	constants "github.com/boardware-cloud/common/constants/account"
 	"github.com/boardware-cloud/common/utils"
 	"github.com/boardware-cloud/middleware"
 	model "github.com/boardware-cloud/model/core"
@@ -20,6 +20,11 @@ import (
 )
 
 type AccountApi struct{}
+
+// UpdateUserRole implements coreapi.AccountApiInterface.
+func (AccountApi) UpdateUserRole(gin_context *gin.Context, id string, gin_body api.UpdateRoleRequest) {
+	panic("unimplemented")
+}
 
 // ListSession implements coreapi.AccountApiInterface.
 func (AccountApi) ListSession(gin_context *gin.Context) {

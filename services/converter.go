@@ -17,8 +17,18 @@ func AccountListBackward(list common.List[core.Account]) common.List[Account] {
 
 func AccountBackward(account core.Account) Account {
 	return Account{
-		ID:    account.ID,
-		Email: account.Email,
-		Role:  account.Role,
+		ID:           account.ID,
+		Email:        account.Email,
+		Role:         account.Role,
+		RegisteredOn: account.CreatedAt,
+		HasTotp:      (account.Totp != nil),
+	}
+}
+
+func AccountForward(a Account) core.Account {
+	return core.Account{
+		ID:    a.ID,
+		Email: a.Email,
+		Role:  a.Role,
 	}
 }

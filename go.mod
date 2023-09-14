@@ -3,7 +3,7 @@ module github.com/boardware-cloud/core
 go 1.21
 
 require (
-	github.com/boardware-cloud/middleware v0.0.0-20230907024424-0903d0d50c7a
+	github.com/boardware-cloud/middleware v0.0.0-20230914073742-dea6d11a1a85
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-webauthn/webauthn v0.8.6
 	github.com/pquerna/otp v1.4.0
@@ -22,9 +22,9 @@ require (
 )
 
 require (
-	github.com/boardware-cloud/common v0.0.0-20230911013217-032a52835521
-	github.com/boardware-cloud/core-api v0.0.0-20230914021727-24f36f198fdf
-	github.com/boardware-cloud/model v0.0.0-20230914013757-e946118fd144
+	github.com/boardware-cloud/common v0.0.0-20230914072942-652098073466
+	github.com/boardware-cloud/core-api v0.0.0-20230914064026-7c514533c0f0
+	github.com/boardware-cloud/model v0.0.0-20230914073523-85ff82d4902d
 	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/bytedance/sonic v1.10.1 // indirect
 	github.com/chenyunda218/golambda v0.0.0-20230809035428-25245dc9a8bd

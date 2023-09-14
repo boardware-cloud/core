@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	errorCode "github.com/boardware-cloud/common/code"
-	"github.com/boardware-cloud/common/constants"
+	constants "github.com/boardware-cloud/common/constants/account"
 	api "github.com/boardware-cloud/core-api"
 	"github.com/boardware-cloud/core/services"
 	"github.com/gin-gonic/gin"

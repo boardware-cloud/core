@@ -172,6 +172,9 @@ func GetAccountByEmail(email string) *Account {
 }
 
 func CreateAccountWithVerificationCode(email, code, password string) (*Account, error) {
+	if email == "" {
+		return nil, errorCode.ErrBadRequest
+	}
 	verificationCode := GetVerification(email, constants.CREATE_ACCOUNT)
 	if !verify(verificationCode, code) {
 		return nil, errorCode.ErrVerificationCode

@@ -17,11 +17,11 @@ var verificationApi VerificationApi
 const CREATE_INTERVAL = 60
 
 func (VerificationApi) CreateVerificationCode(c *gin.Context, request api.CreateVerificationCodeRequest) {
-	purpose := constants.VerificationCodePurpose(request.Purpose)
 	if request.Purpose != api.CREATE_2FA && request.Purpose != api.CREATE_ACCOUNT && request.Purpose != api.SET_PASSWORD && request.Purpose != api.SIGNIN && request.Purpose != api.TICKET {
 		c.JSON(http.StatusBadRequest, "")
 		return
 	}
+	purpose := constants.VerificationCodePurpose(request.Purpose)
 	if request.Email == nil {
 		c.JSON(http.StatusBadRequest, "")
 		return

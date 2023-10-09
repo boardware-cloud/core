@@ -60,16 +60,16 @@ func DeleteTotp(account core.Account) {
 }
 
 func CreateSessionWithTickets(email string, tokens []string) (*Session, error) {
-	var account core.Account
-	ctx := DB.Find(&account, "email = ?", email)
-	if ctx.RowsAffected == 0 {
-		return nil, errorCode.ErrNotFound
+	account, err := core.FindAccountByEmail(email)
+	if err != nil {
+		return nil, err
 	}
+
 	if !account.ColdDown(500) {
 		return nil, errorCode.ErrTooManyRequests
 	}
 	account.CreateColdDown()
-	err := NFactor(account, tokens, 2)
+	err = NFactor(account, tokens, 2)
 	if err != nil {
 		return nil, errorCode.ErrUnauthorized
 	}
@@ -90,7 +90,7 @@ func CreateSessionWithTickets(email string, tokens []string) (*Session, error) {
 }
 
 func GetAuthenticationFactors(email string) []authenication.AuthenticationFactor {
-	account, err := core.GetAccountByEmail(email)
+	account, err := core.FindAccountByEmail(email)
 	var factors []authenication.AuthenticationFactor
 	if err != nil {
 		return factors

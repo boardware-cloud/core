@@ -1,17 +1,24 @@
 package controllers
 
 import (
-	"github.com/boardware-cloud/common/server"
+	"context"
+
 	api "github.com/boardware-cloud/core-api"
 	"github.com/boardware-cloud/middleware"
+	model "github.com/boardware-cloud/model/core"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 var router *gin.Engine
+var db *gorm.DB
 
-func Init() {
+func Init(inject context.Context) {
+	db = inject.Value("db").(*gorm.DB)
+	model.Init(db)
 	router = gin.Default()
-	router.Use(server.CorsMiddleware())
+	router.Use(middleware.CorsMiddleware())
+	router.Use(middleware.Auth())
 	middleware.Health(router)
 	var accountApi AccountApi
 	api.AccountApiInterfaceMounter(router, accountApi)

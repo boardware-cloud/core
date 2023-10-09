@@ -94,7 +94,7 @@ func FinishLogin(sessionId uint, car *protocol.ParsedCredentialAssertionData) (s
 	if ctx.RowsAffected == 0 {
 		return "", errorCode.ErrUnauthorized
 	}
-	account, err := core.GetAccount(session.AccountId)
+	account, err := core.FindAccount(session.AccountId)
 	if err != nil {
 		return "", err
 	}

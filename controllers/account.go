@@ -5,16 +5,16 @@ import (
 	"net/http"
 
 	errorCode "github.com/boardware-cloud/common/code"
+	constants "github.com/boardware-cloud/common/constants/account"
 	"github.com/boardware-cloud/common/constants/authenication"
+	"github.com/boardware-cloud/common/utils"
 	api "github.com/boardware-cloud/core-api"
 	core "github.com/boardware-cloud/core/services"
-	"github.com/chenyunda218/golambda"
-	"github.com/go-webauthn/webauthn/protocol"
-
-	constants "github.com/boardware-cloud/common/constants/account"
-	"github.com/boardware-cloud/common/utils"
+	servicesModel "github.com/boardware-cloud/core/services/model"
 	"github.com/boardware-cloud/middleware"
 	model "github.com/boardware-cloud/model/core"
+	"github.com/chenyunda218/golambda"
+	"github.com/go-webauthn/webauthn/protocol"
 
 	"github.com/gin-gonic/gin"
 )
@@ -253,13 +253,8 @@ func (AccountApi) ListAccount(ctx *gin.Context, ordering api.Ordering, index int
 		func(ctx *gin.Context, account model.Account) {
 			list := core.ListAccount(index, limit)
 			ctx.JSON(http.StatusOK, api.AccountList{
-				Data: golambda.Map(list.Data, func(_ int, account core.Account) api.Account {
-					return api.Account{
-						Id:      utils.UintToString(account.ID),
-						Email:   account.Email,
-						HasTotp: account.HasTotp,
-						Role:    api.Role(account.Role),
-					}
+				Data: golambda.Map(list.Data, func(_ int, account servicesModel.Account) api.Account {
+					return AccountBackward(account)
 				}),
 				Pagination: api.Pagination{
 					Limit: list.Pagination.Limit,

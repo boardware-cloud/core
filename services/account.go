@@ -7,6 +7,7 @@ import (
 	constants "github.com/boardware-cloud/common/constants/account"
 	"github.com/boardware-cloud/common/constants/authenication"
 	"github.com/boardware-cloud/common/utils"
+	"github.com/boardware-cloud/core/services/model"
 	"github.com/boardware-cloud/model/common"
 	"github.com/boardware-cloud/model/core"
 	"github.com/pquerna/otp"
@@ -15,14 +16,6 @@ import (
 
 const EXPIRED_TIME = 60 * 5
 const MAX_TRIES = 10
-
-type Account struct {
-	ID           uint           `json:"id"`
-	Email        string         `json:"email"`
-	Role         constants.Role `json:"role"`
-	HasTotp      bool           `json:"hasTotp"`
-	RegisteredOn time.Time      `json:"registeredOn"`
-}
 
 type Session struct {
 	Token       string                `json:"token"`
@@ -106,12 +99,12 @@ func GetAuthenticationFactors(email string) []authenication.AuthenticationFactor
 	return factors
 }
 
-func CreateAccount(email, password string, role constants.Role) (*Account, error) {
+func CreateAccount(email, password string, role constants.Role) (*model.Account, error) {
 	if ctx := DB.Find(&core.Account{}, "email = ?", email); ctx.RowsAffected != 0 {
 		return nil, errorCode.ErrEmailExists
 	}
 	hashed, salt := utils.HashWithSalt(password)
-	account := AccountForward(Account{Email: email, Role: role})
+	account := core.Account{Email: email, Role: role}
 	account.Password = hashed
 	account.Salt = salt
 	if role != "" {
@@ -125,7 +118,7 @@ func CreateAccount(email, password string, role constants.Role) (*Account, error
 	return &back, nil
 }
 
-func GetAccountById(id uint) *Account {
+func GetAccountById(id uint) *model.Account {
 	var coreAccount core.Account
 	if ctx := DB.Find(&coreAccount, id); ctx.RowsAffected == 0 {
 		return nil
@@ -134,7 +127,7 @@ func GetAccountById(id uint) *Account {
 	return &account
 }
 
-func GetAccountByEmail(email string) *Account {
+func GetAccountByEmail(email string) *model.Account {
 	var coreAccount core.Account
 	if ctx := DB.Where("email = ?", email).Find(&coreAccount); ctx.RowsAffected == 0 {
 		return nil
@@ -143,7 +136,7 @@ func GetAccountByEmail(email string) *Account {
 	return &account
 }
 
-func CreateAccountWithVerificationCode(email, code, password string) (*Account, error) {
+func CreateAccountWithVerificationCode(email, code, password string) (*model.Account, error) {
 	if email == "" {
 		return nil, errorCode.ErrBadRequest
 	}
@@ -191,7 +184,7 @@ func UpdateUserRole(accountId, role constants.Role) {
 	// TODO:
 }
 
-func ListAccount(index, limit int64) common.List[Account] {
+func ListAccount(index, limit int64) common.List[model.Account] {
 	return AccountListBackward(core.ListAccount(index, limit))
 }
 

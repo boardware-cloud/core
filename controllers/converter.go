@@ -1,19 +1,19 @@
 package controllers
 
 import (
+	"github.com/boardware-cloud/common/utils"
 	api "github.com/boardware-cloud/core-api"
 	core "github.com/boardware-cloud/core/services"
-
-	"github.com/boardware-cloud/common/utils"
+	"github.com/boardware-cloud/core/services/model"
 )
 
-func AccountBackward(account core.Account) api.Account {
+func AccountBackward(account model.Account) api.Account {
 	return api.Account{
-		Id:           utils.UintToString(account.ID),
-		Email:        account.Email,
-		Role:         api.Role(account.Role),
-		HasTotp:      account.HasTotp,
-		RegisteredOn: account.RegisteredOn.Unix(),
+		Id:           utils.UintToString(account.ID()),
+		Email:        account.Email(),
+		Role:         api.Role(account.Role()),
+		HasTotp:      account.HasTotp(),
+		RegisteredOn: account.RegisteredOn().Unix(),
 	}
 }
 

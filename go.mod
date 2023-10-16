@@ -3,7 +3,7 @@ module github.com/boardware-cloud/core
 go 1.21
 
 require (
-	github.com/boardware-cloud/middleware v0.0.0-20231009092901-4fc697d0eb09
+	github.com/boardware-cloud/middleware v0.0.0-20231016020416-3575f36e0e79
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-webauthn/webauthn v0.8.6
 	github.com/pquerna/otp v1.4.0

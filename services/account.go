@@ -3,6 +3,7 @@ package services
 import (
 	"time"
 
+	"github.com/Dparty/common/fault"
 	errorCode "github.com/boardware-cloud/common/code"
 	constants "github.com/boardware-cloud/common/constants/account"
 	"github.com/boardware-cloud/common/constants/authenication"
@@ -53,22 +54,22 @@ func DeleteTotp(account core.Account) {
 }
 
 func CreateSessionWithTickets(email string, tokens []string) (*Session, error) {
-	account, err := core.FindAccountByEmail(email)
-	if err != nil {
-		return nil, err
+	account := accountRepository.GetByEmail(email)
+	if account == nil {
+		return nil, fault.ErrUnauthorized
 	}
 
 	if !account.ColdDown(500) {
 		return nil, errorCode.ErrTooManyRequests
 	}
 	account.CreateColdDown()
-	err = NFactor(account, tokens, 2)
+	err := NFactor(*account, tokens, 2)
 	if err != nil {
 		return nil, errorCode.ErrUnauthorized
 	}
 	expiredAt := time.Now().AddDate(0, 0, 7).Unix()
 	token, _ := utils.SignJwt(
-		utils.UintToString(account.ID),
+		utils.UintToString(account.ID()),
 		account.Email,
 		string(account.Role),
 		expiredAt,
@@ -83,9 +84,9 @@ func CreateSessionWithTickets(email string, tokens []string) (*Session, error) {
 }
 
 func GetAuthenticationFactors(email string) []authenication.AuthenticationFactor {
-	account, err := core.FindAccountByEmail(email)
+	account := accountRepository.GetByEmail(email)
 	var factors []authenication.AuthenticationFactor
-	if err != nil {
+	if account == nil {
 		return factors
 	}
 	factors = append(factors, authenication.PASSWORD)
@@ -207,7 +208,7 @@ func NFactor(account core.Account, tokens []string, factor int) error {
 		if err != nil {
 			return errorCode.ErrUnauthorized
 		}
-		if ticket.AccountId == account.ID {
+		if ticket.AccountId == account.ID() {
 			fa[ticket.Type] = true
 		}
 	}

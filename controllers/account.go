@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/Dparty/common/fault"
 	errorCode "github.com/boardware-cloud/common/code"
 	constants "github.com/boardware-cloud/common/constants/account"
 	"github.com/boardware-cloud/common/constants/authenication"
@@ -117,12 +118,12 @@ func (AccountApi) ListWebAuthn(ctx *gin.Context) {
 
 // CreateWebauthnTicketChallenge implements coreapi.AccountApiInterface.
 func (AccountApi) CreateWebauthnTicketChallenge(ctx *gin.Context, request api.CreateTicketChallenge) {
-	account, err := model.FindAccountByEmail(request.Email)
-	if err != nil {
-		errorCode.GinHandler(ctx, err)
+	account := accountRepository.GetByEmail(request.Email)
+	if account == nil {
+		errorCode.GinHandler(ctx, fault.ErrUnauthorized)
 		return
 	}
-	option, session, err := core.BeginLogin(account)
+	option, session, err := core.BeginLogin(*account)
 	if err != nil {
 		errorCode.GinHandler(ctx, err)
 		return
@@ -268,7 +269,7 @@ func (AccountApi) ListAccount(ctx *gin.Context, ordering api.Ordering, index int
 func (AccountApi) GetAccount(ctx *gin.Context) {
 	middleware.GetAccount(ctx,
 		func(c *gin.Context, a model.Account) {
-			account := core.GetAccountById(a.ID)
+			account := core.GetAccountById(a.ID())
 			c.JSON(http.StatusOK, AccountBackward(*account))
 		})
 }

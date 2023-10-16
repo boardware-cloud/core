@@ -12,7 +12,7 @@ type Account struct {
 }
 
 func (a Account) ID() uint {
-	return a.Entity.ID
+	return a.Entity.ID()
 }
 
 func (a Account) Email() string {

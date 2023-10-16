@@ -12,10 +12,12 @@ import (
 
 var router *gin.Engine
 var db *gorm.DB
+var accountRepository model.AccountRepository
 
 func Init(inject context.Context) {
 	db = inject.Value("db").(*gorm.DB)
 	model.Init(db)
+	accountRepository = model.NewAccountRepository(db)
 	router = gin.Default()
 	router.Use(middleware.CorsMiddleware())
 	router.Use(middleware.Auth())

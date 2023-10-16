@@ -12,6 +12,8 @@ var DB *gorm.DB
 
 var emailSender notifications.Sender
 
+var accountRepository core.AccountRepository
+
 func init() {
 	viper.SetConfigName("env")
 	viper.SetConfigType("yaml")
@@ -33,5 +35,6 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	accountRepository = core.NewAccountRepository(DB)
 	core.Init(DB)
 }

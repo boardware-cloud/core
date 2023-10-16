@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/Dparty/common/fault"
 	errorCode "github.com/boardware-cloud/common/code"
 	"github.com/boardware-cloud/model/core"
 	"github.com/go-webauthn/webauthn/protocol"
@@ -49,7 +50,7 @@ func ListWebAuthn(account core.Account) []core.Credential {
 func BeginRegistration(account core.Account) (*protocol.CredentialCreation, core.SessionData) {
 	options, session, _ := authn.BeginRegistration(account)
 	sessionData := core.SessionData{
-		AccountId: account.ID,
+		AccountId: account.ID(),
 		Data:      core.WebAuthnSessionData(*session),
 	}
 	DB.Save(&sessionData)
@@ -70,7 +71,7 @@ func FinishRegistration(account core.Account, sessionId uint, name, os string, c
 	if err != nil {
 		return errorCode.ErrUnauthorized
 	}
-	credential := core.Credential{AccountId: account.ID, Name: name, Os: os, Credential: core.WebAuthnCredential(*user)}
+	credential := core.Credential{AccountId: account.ID(), Name: name, Os: os, Credential: core.WebAuthnCredential(*user)}
 	DB.Save(&credential)
 	return nil
 }
@@ -81,7 +82,7 @@ func BeginLogin(account core.Account) (*protocol.CredentialAssertion, *core.Sess
 		return nil, nil, errorCode.ErrUnauthorized
 	}
 	sessionData := core.SessionData{
-		AccountId: account.ID,
+		AccountId: account.ID(),
 		Data:      core.WebAuthnSessionData(*session),
 	}
 	DB.Save(&sessionData)
@@ -94,13 +95,13 @@ func FinishLogin(sessionId uint, car *protocol.ParsedCredentialAssertionData) (s
 	if ctx.RowsAffected == 0 {
 		return "", errorCode.ErrUnauthorized
 	}
-	account, err := core.FindAccount(session.AccountId)
-	if err != nil {
-		return "", err
+	account := accountRepository.GetById(session.AccountId)
+	if account == nil {
+		return "", fault.ErrUnauthorized
 	}
-	_, err = authn.ValidateLogin(account, webauthn.SessionData(session.Data), car)
+	_, err := authn.ValidateLogin(account, webauthn.SessionData(session.Data), car)
 	if err != nil {
 		return "", errorCode.ErrUnauthorized
 	}
-	return TicketString(createTicket("WEBAUTHN", account.ID)), nil
+	return TicketString(createTicket("WEBAUTHN", account.ID())), nil
 }

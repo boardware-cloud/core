@@ -20,7 +20,7 @@ func Init(inject context.Context) {
 	accountRepository = model.NewAccountRepository(db)
 	router = gin.Default()
 	router.Use(middleware.CorsMiddleware())
-	router.Use(middleware.Auth())
+	// router.Use(middleware.Auth())
 	middleware.Health(router)
 	var accountApi AccountApi
 	api.AccountApiInterfaceMounter(router, accountApi)

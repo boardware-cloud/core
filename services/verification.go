@@ -53,7 +53,8 @@ func CreateVerificationCode(identity string, purpose constants.VerificationCodeP
 		if err != nil {
 			return errorCode.ErrUndefined
 		}
-		DB.Delete(&model.VerificationCode{Identity: identity, Purpose: purpose})
+		code := &model.VerificationCode{Identity: identity, Purpose: purpose}
+		DB.Where(code).Delete(code)
 		DB.Save(&newCode)
 		return nil
 	}

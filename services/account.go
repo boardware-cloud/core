@@ -101,39 +101,29 @@ func GetAuthenticationFactors(email string) []authenication.AuthenticationFactor
 }
 
 func CreateAccount(email, password string, role constants.Role) (*model.Account, error) {
-	if ctx := DB.Find(&core.Account{}, "email = ?", email); ctx.RowsAffected != 0 {
-		return nil, errorCode.ErrEmailExists
+	account, err := accountRepository.Create(email, password, role)
+	if err != nil {
+		return nil, err
 	}
-	hashed, salt := utils.HashWithSalt(password)
-	account := core.Account{Email: email, Role: role}
-	account.Password = hashed
-	account.Salt = salt
-	if role != "" {
-		account.Role = role
-	} else {
-		account.Role = constants.USER
-	}
-	DB.Create(&account)
-	DB.Delete(&core.VerificationCode{Identity: email})
-	back := AccountBackward(account)
+	back := AccountBackward(*account)
 	return &back, nil
 }
 
 func GetAccountById(id uint) *model.Account {
-	var coreAccount core.Account
-	if ctx := DB.Find(&coreAccount, id); ctx.RowsAffected == 0 {
+	account := accountRepository.GetById(id)
+	if account == nil {
 		return nil
 	}
-	account := AccountBackward(coreAccount)
-	return &account
+	a := AccountBackward(*account)
+	return &a
 }
 
 func GetAccountByEmail(email string) *model.Account {
-	var coreAccount core.Account
-	if ctx := DB.Where("email = ?", email).Find(&coreAccount); ctx.RowsAffected == 0 {
+	var coreAccount *core.Account = accountRepository.GetByEmail(email)
+	if coreAccount == nil {
 		return nil
 	}
-	account := AccountBackward(coreAccount)
+	account := AccountBackward(*coreAccount)
 	return &account
 }
 

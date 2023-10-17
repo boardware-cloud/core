@@ -17,13 +17,7 @@ var ticketApi TicketApi
 func (TicketApi) CreateTicket(c *gin.Context, request coreapi.CreateTicketRequest) {
 	ticketType := ""
 	switch request.Type {
-	case coreapi.WEBAUTHN:
-		ticketType = string(request.Type)
-	case coreapi.EMAIL:
-		ticketType = string(request.Type)
-	case coreapi.TOTP:
-		ticketType = string(request.Type)
-	case coreapi.PASSWORD:
+	case coreapi.WEBAUTHN, coreapi.EMAIL, coreapi.TOTP, coreapi.PASSWORD:
 		ticketType = string(request.Type)
 	default:
 		c.JSON(http.StatusBadRequest, "")

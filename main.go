@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-
 	"github.com/boardware-cloud/core/controllers"
 	_ "github.com/boardware-cloud/core/services"
 	"github.com/boardware-cloud/model"
@@ -24,7 +22,6 @@ func main() {
 	dbport := viper.GetString("database.port")
 	database := viper.GetString("database.database")
 	db, _ = model.NewConnection(user, password, host, dbport, database)
-	ctx := context.WithValue(context.Background(), "db", db)
-	controllers.Init(ctx)
+	controllers.Init(db)
 	controllers.Run(port)
 }

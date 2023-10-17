@@ -52,7 +52,7 @@ func createTotpTicket(account core.Account, totpCode string) (string, error) {
 }
 
 func createEmailTicket(account core.Account, verificationCode string) (string, error) {
-	code := GetVerification(account.Email, constants.TICKET)
+	code := verificationCodeRepository.Get(account.Email, constants.TICKET)
 	if !verify(code, verificationCode) {
 		return "", errorCode.ErrVerificationCode
 	}

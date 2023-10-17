@@ -21,7 +21,3 @@ func AccountBackward(account core.Account) model.Account {
 		Entity: account,
 	}
 }
-
-func AccountForward(a model.Account) core.Account {
-	return core.Account{}
-}

@@ -50,7 +50,7 @@ func CreateTotp(account core.Account) string {
 
 func DeleteTotp(account core.Account) {
 	account.Totp = nil
-	DB.Save(&account)
+	accountRepository.Save(&account)
 }
 
 func CreateSessionWithTickets(email string, tokens []string) (*Session, error) {
@@ -131,7 +131,7 @@ func CreateAccountWithVerificationCode(email, code, password string) (*model.Acc
 	if email == "" {
 		return nil, errorCode.ErrBadRequest
 	}
-	verificationCode := GetVerification(email, constants.CREATE_ACCOUNT)
+	verificationCode := verificationCodeRepository.Get(email, constants.CREATE_ACCOUNT)
 	if !verify(verificationCode, code) {
 		return nil, errorCode.ErrVerificationCode
 	}
@@ -139,33 +139,25 @@ func CreateAccountWithVerificationCode(email, code, password string) (*model.Acc
 	return CreateAccount(email, password, constants.USER)
 }
 
-func setPassword(account core.Account, newPassword string) {
-	hashed, salt := utils.HashWithSalt(newPassword)
-	account.Password = hashed
-	account.Salt = salt
-	DB.Save(&account)
-}
-
 func UpdatePassword(email string, password *string, code *string, newPassword string) error {
-	var account core.Account
-	ctx := DB.Where("email = ?", email).Find(&account)
-	if ctx.RowsAffected == 0 {
+	var account *core.Account = accountRepository.GetByEmail(email)
+	if account == nil {
 		return errorCode.ErrNotFound
 	}
 	if password != nil {
 		if !utils.PasswordsMatch(account.Password, *password, account.Salt) {
 			return errorCode.ErrUnauthorized
 		}
-		setPassword(account, newPassword)
+		accountRepository.Save(account.SetPassword(newPassword))
 		return nil
 	}
 	if code != nil {
-		verificationCode := GetVerification(email, constants.SET_PASSWORD)
+		verificationCode := verificationCodeRepository.Get(email, constants.SET_PASSWORD)
 		if !verify(verificationCode, *code) {
 			return errorCode.ErrVerificationCode
 		}
 		DB.Delete(verificationCode)
-		setPassword(account, newPassword)
+		accountRepository.Save(account.SetPassword(newPassword))
 		return nil
 	}
 	return errorCode.ErrVerificationCode
@@ -177,18 +169,6 @@ func UpdateUserRole(accountId, role constants.Role) {
 
 func ListAccount(index, limit int64) common.List[model.Account] {
 	return AccountListBackward(core.ListAccount(index, limit))
-}
-
-func verify(v *core.VerificationCode, code string) bool {
-	if v == nil {
-		return false
-	}
-	v.Tries++
-	DB.Save(v)
-	if v.Code != code || time.Now().Unix()-v.CreatedAt.Unix() > EXPIRED_TIME || v.Tries > MAX_TRIES {
-		return false
-	}
-	return true
 }
 
 func NFactor(account core.Account, tokens []string, factor int) error {
@@ -206,4 +186,16 @@ func NFactor(account core.Account, tokens []string, factor int) error {
 		return errorCode.ErrUnauthorized
 	}
 	return nil
+}
+
+func verify(v *core.VerificationCode, code string) bool {
+	if v == nil {
+		return false
+	}
+	v.Tries++
+	DB.Save(v)
+	if v.Code != code || time.Now().Unix()-v.CreatedAt.Unix() > EXPIRED_TIME || v.Tries > MAX_TRIES {
+		return false
+	}
+	return true
 }

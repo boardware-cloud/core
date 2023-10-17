@@ -11,18 +11,6 @@ import (
 	model "github.com/boardware-cloud/model/core"
 )
 
-func GetVerification(identity string, purpose constants.VerificationCodePurpose) *model.VerificationCode {
-	var verificationCode model.VerificationCode
-	ctx := DB.Where("identity = ? AND purpose = ?",
-		identity,
-		purpose,
-	).Order("created_at DESC").Find(&verificationCode)
-	if ctx.RowsAffected == 0 {
-		return nil
-	}
-	return &verificationCode
-}
-
 func CreateVerificationCode(identity string, purpose constants.VerificationCodePurpose) error {
 	ctx := DB.Where("email = ?", identity).Find(&model.Account{})
 	if purpose == constants.CREATE_ACCOUNT && ctx.RowsAffected != 0 {

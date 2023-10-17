@@ -13,6 +13,7 @@ var DB *gorm.DB
 var emailSender notifications.Sender
 
 var accountRepository core.AccountRepository
+var verificationCodeRepository core.VerificationCodeRepository
 
 func init() {
 	viper.SetConfigName("env")
@@ -36,5 +37,6 @@ func init() {
 		panic(err)
 	}
 	accountRepository = core.NewAccountRepository(DB)
+	verificationCodeRepository = core.NewVerificationCodeRepository(DB)
 	core.Init(DB)
 }

@@ -56,7 +56,7 @@ func createEmailTicket(account core.Account, verificationCode string) (string, e
 	if !verify(code, verificationCode) {
 		return "", errorCode.ErrVerificationCode
 	}
-	DB.Delete(&code)
+	verificationCodeRepository.Delete(account.Email, constants.TICKET)
 	return TicketString(createTicket("EMAIL", account.ID())), nil
 }
 

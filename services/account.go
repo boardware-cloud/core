@@ -105,8 +105,7 @@ func CreateAccount(email, password string, role constants.Role) (*model.Account,
 	if err != nil {
 		return nil, err
 	}
-	back := AccountBackward(*account)
-	return &back, nil
+	return &model.Account{Entity: *account}, nil
 }
 
 func GetAccountById(id uint) *model.Account {
@@ -114,17 +113,15 @@ func GetAccountById(id uint) *model.Account {
 	if account == nil {
 		return nil
 	}
-	a := AccountBackward(*account)
-	return &a
+	return &model.Account{Entity: *account}
 }
 
 func GetAccountByEmail(email string) *model.Account {
-	var coreAccount *core.Account = accountRepository.GetByEmail(email)
-	if coreAccount == nil {
+	var account *core.Account = accountRepository.GetByEmail(email)
+	if account == nil {
 		return nil
 	}
-	account := AccountBackward(*coreAccount)
-	return &account
+	return &model.Account{Entity: *account}
 }
 
 func CreateAccountWithVerificationCode(email, code, password string) (*model.Account, error) {
@@ -156,7 +153,7 @@ func UpdatePassword(email string, password *string, code *string, newPassword st
 		if !verify(verificationCode, *code) {
 			return errorCode.ErrVerificationCode
 		}
-		DB.Delete(verificationCode)
+		verificationCodeRepository.Delete(email, constants.SET_PASSWORD)
 		accountRepository.Save(account.SetPassword(newPassword))
 		return nil
 	}

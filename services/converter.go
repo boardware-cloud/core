@@ -10,14 +10,8 @@ import (
 func AccountListBackward(list common.List[core.Account]) common.List[model.Account] {
 	return common.List[model.Account]{
 		Data: golambda.Map(list.Data, func(_ int, account core.Account) model.Account {
-			return AccountBackward(account)
+			return model.Account{Entity: account}
 		}),
 		Pagination: list.Pagination,
-	}
-}
-
-func AccountBackward(account core.Account) model.Account {
-	return model.Account{
-		Entity: account,
 	}
 }

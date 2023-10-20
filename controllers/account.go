@@ -118,7 +118,7 @@ func (AccountApi) ListWebAuthn(ctx *gin.Context) {
 
 // CreateWebauthnTicketChallenge implements coreapi.AccountApiInterface.
 func (AccountApi) CreateWebauthnTicketChallenge(ctx *gin.Context, request api.CreateTicketChallenge) {
-	account := accountRepository.GetByEmail(request.Email)
+	account := accountService.GetByEmail(request.Email)
 	if account == nil {
 		errorCode.GinHandler(ctx, fault.ErrUnauthorized)
 		return

@@ -4,10 +4,9 @@ import (
 	"github.com/boardware-cloud/common/utils"
 	api "github.com/boardware-cloud/core-api"
 	core "github.com/boardware-cloud/core/services"
-	model "github.com/boardware-cloud/core/services"
 )
 
-func AccountBackward(account model.Account) api.Account {
+func AccountBackward(account core.Account) api.Account {
 	return api.Account{
 		Id:           utils.UintToString(account.ID()),
 		Email:        account.Email(),

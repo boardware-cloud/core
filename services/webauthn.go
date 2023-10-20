@@ -70,8 +70,8 @@ func FinishRegistration(account core.Account, sessionId uint, name, os string, c
 	return nil
 }
 
-func BeginLogin(account core.Account) (*protocol.CredentialAssertion, *core.SessionData, error) {
-	options, session, err := authn.BeginLogin(account)
+func BeginLogin(account Account) (*protocol.CredentialAssertion, *core.SessionData, error) {
+	options, session, err := authn.BeginLogin(account.Entity)
 	if err != nil {
 		return nil, nil, errorCode.ErrUnauthorized
 	}

@@ -41,7 +41,7 @@ func (a AccountService) GetAccount(id uint) *Account {
 	return &Account{Entity: *account}
 }
 
-func (a AccountService) GetAccountByEmail(email string) *Account {
+func (a AccountService) GetByEmail(email string) *Account {
 	var account *core.Account = a.accountRepository.GetByEmail(email)
 	if account == nil {
 		return nil

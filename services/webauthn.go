@@ -41,12 +41,6 @@ func DeleteWebAuthn(account core.Account, id uint) error {
 	return nil
 }
 
-func ListWebAuthn(account core.Account) []core.Credential {
-	var webauthns []core.Credential = make([]core.Credential, 0)
-	DB.Where("account_id = ?", account.ID()).Find(&webauthns)
-	return webauthns
-}
-
 func BeginRegistration(account core.Account) (*protocol.CredentialCreation, core.SessionData) {
 	options, session, _ := authn.BeginRegistration(account)
 	sessionData := core.SessionData{

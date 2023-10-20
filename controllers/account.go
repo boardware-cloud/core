@@ -102,7 +102,8 @@ func (AccountApi) CreateWebauthnTickets(ctx *gin.Context, id string) {
 // ListWebAuthn implements coreapi.AccountApiInterface.
 func (AccountApi) ListWebAuthn(ctx *gin.Context) {
 	middleware.GetAccount(ctx, func(ctx *gin.Context, account model.Account) {
-		webauthns := core.ListWebAuthn(account)
+		a := accountService.GetAccount(account.ID())
+		webauthns := a.ListWebAuthn()
 		ctx.JSON(http.StatusOK, golambda.Map(webauthns,
 			func(_ int, cred model.Credential) api.WebAuthn {
 				return api.WebAuthn{

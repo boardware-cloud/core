@@ -37,8 +37,8 @@ func (a Account) RegisteredOn() time.Time {
 	return a.Entity.CreatedAt
 }
 
-func (a Account) ListWebAuthn(account core.Account) []core.Credential {
-	return webauthRepository.List("account_id = ?", account.ID())
+func (a Account) ListWebAuthn() []core.Credential {
+	return webauthRepository.List("account_id = ?", a.ID())
 }
 
 type Session struct {

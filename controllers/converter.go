@@ -4,7 +4,7 @@ import (
 	"github.com/boardware-cloud/common/utils"
 	api "github.com/boardware-cloud/core-api"
 	core "github.com/boardware-cloud/core/services"
-	"github.com/boardware-cloud/core/services/model"
+	model "github.com/boardware-cloud/core/services"
 )
 
 func AccountBackward(account model.Account) api.Account {

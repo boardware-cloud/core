@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/Dparty/common/fault"
@@ -12,7 +11,7 @@ import (
 	"github.com/boardware-cloud/common/utils"
 	api "github.com/boardware-cloud/core-api"
 	core "github.com/boardware-cloud/core/services"
-	servicesModel "github.com/boardware-cloud/core/services/model"
+	servicesModel "github.com/boardware-cloud/core/services"
 	"github.com/boardware-cloud/middleware"
 	model "github.com/boardware-cloud/model/core"
 	"github.com/chenyunda218/golambda"
@@ -49,7 +48,7 @@ func (AccountApi) GetAccountById(ctx *gin.Context, id string) {
 func (AccountApi) DeleteTotp(ctx *gin.Context) {
 	middleware.GetAccount(ctx,
 		func(ctx *gin.Context, account model.Account) {
-			core.DeleteTotp(account)
+			accountService.DeleteTotp(account)
 			ctx.JSON(http.StatusNoContent, "")
 		})
 }
@@ -179,7 +178,7 @@ func (AccountApi) CreateWebauthn(ctx *gin.Context, id string) {
 func (AccountApi) GetTotp(c *gin.Context) {
 	middleware.GetAccount(c,
 		func(c *gin.Context, account model.Account) {
-			c.JSON(http.StatusOK, api.Totp{Url: core.CreateTotp(account)})
+			c.JSON(http.StatusOK, api.Totp{Url: accountService.CreateTotp(account)})
 		})
 }
 
@@ -193,7 +192,7 @@ func (AccountApi) CreateTotp2FA(c *gin.Context, request api.PutTotpRequest) {
 			return
 		}
 		var url string
-		url, err = core.UpdateTotp2FA(account, request.Url, request.TotpCode)
+		url, err = accountService.UpdateTotp2FA(account, request.Url, request.TotpCode)
 		if err != nil {
 			errorCode.GinHandler(c, err)
 			return
@@ -205,24 +204,23 @@ func (AccountApi) CreateTotp2FA(c *gin.Context, request api.PutTotpRequest) {
 }
 
 func (AccountApi) CreateSession(c *gin.Context, createSessionRequest api.CreateSessionRequest) {
-	fmt.Println(createSessionRequest)
-	// if createSessionRequest.Tickets != nil {
-	// 	session, sessionError := core.CreateSessionWithTickets(*createSessionRequest.Email, *createSessionRequest.Tickets)
-	// 	if sessionError != nil {
-	// 		errorCode.GinHandler(c, sessionError)
-	// 		return
-	// 	}
-	// 	c.JSON(http.StatusCreated, api.Token{
-	// 		Secret:      session.Token,
-	// 		TokenType:   "JWT",
-	// 		TokenFormat: "bearer",
-	// 	})
-	// }
+	if createSessionRequest.Tickets != nil {
+		session, sessionError := accountService.CreateSessionWithTickets(*createSessionRequest.Email, *createSessionRequest.Tickets)
+		if sessionError != nil {
+			errorCode.GinHandler(c, sessionError)
+			return
+		}
+		c.JSON(http.StatusCreated, api.Token{
+			Secret:      session.Token,
+			TokenType:   "JWT",
+			TokenFormat: "bearer",
+		})
+	}
 }
 
 func (AccountApi) CreateAccount(c *gin.Context, createAccountRequest api.CreateAccountRequest) {
 	if createAccountRequest.VerificationCode != nil {
-		a, createError := core.CreateAccountWithVerificationCode(
+		a, createError := accountService.CreateAccountWithVerificationCode(
 			createAccountRequest.Email,
 			*createAccountRequest.VerificationCode,
 			createAccountRequest.Password)
@@ -238,7 +236,7 @@ func (AccountApi) CreateAccount(c *gin.Context, createAccountRequest api.CreateA
 		if createAccountRequest.Role != nil {
 			role = constants.Role(*createAccountRequest.Role)
 		}
-		a, createError := core.CreateAccount(
+		a, createError := accountService.CreateAccount(
 			createAccountRequest.Email,
 			createAccountRequest.Password,
 			role,
@@ -271,13 +269,13 @@ func (AccountApi) ListAccount(ctx *gin.Context, ordering api.Ordering, index int
 func (AccountApi) GetAccount(ctx *gin.Context) {
 	middleware.GetAccount(ctx,
 		func(c *gin.Context, a model.Account) {
-			account := core.GetAccountById(a.ID())
+			account := accountService.GetAccount(a.ID())
 			c.JSON(http.StatusOK, AccountBackward(*account))
 		})
 }
 
 func GetAccountById(id string) *api.Account {
-	account := core.GetAccountById(utils.StringToUint(id))
+	account := accountService.GetAccount(utils.StringToUint(id))
 	if account == nil {
 		return nil
 	}
@@ -300,7 +298,7 @@ func (a AccountApi) VerifySession(c *gin.Context, sessionVerificationRequest api
 }
 
 func (AccountApi) UpdatePassword(c *gin.Context, request api.UpdatePasswordRequest) {
-	err := core.UpdatePassword(request.Email, request.Password, request.VerificationCode, request.NewPassword)
+	err := accountService.UpdatePassword(request.Email, request.Password, request.VerificationCode, request.NewPassword)
 	if err != nil {
 		errorCode.GinHandler(c, err)
 		return

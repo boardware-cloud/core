@@ -3,27 +3,38 @@ package services
 import (
 	"time"
 
-	"github.com/Dparty/common/fault"
 	errorCode "github.com/boardware-cloud/common/code"
 	constants "github.com/boardware-cloud/common/constants/account"
 	"github.com/boardware-cloud/common/constants/authenication"
-	"github.com/boardware-cloud/common/utils"
-	"github.com/boardware-cloud/core/services/model"
 	"github.com/boardware-cloud/model/common"
 	"github.com/boardware-cloud/model/core"
-	"github.com/pquerna/otp"
-	"github.com/pquerna/otp/totp"
 )
 
 const EXPIRED_TIME = 60 * 5
 const MAX_TRIES = 10
 
-func GetAccountById(id uint) *model.Account {
-	account := accountRepository.GetById(id)
-	if account == nil {
-		return nil
-	}
-	return &model.Account{Entity: *account}
+type Account struct {
+	Entity core.Account `json:"entity"`
+}
+
+func (a Account) ID() uint {
+	return a.Entity.ID()
+}
+
+func (a Account) Email() string {
+	return a.Entity.Email
+}
+
+func (a Account) Role() constants.Role {
+	return a.Entity.Role
+}
+
+func (a Account) HasTotp() bool {
+	return a.Entity.Totp != nil
+}
+
+func (a Account) RegisteredOn() time.Time {
+	return a.Entity.CreatedAt
 }
 
 type Session struct {
@@ -33,62 +44,6 @@ type Session struct {
 	ExpiredAt   int64                 `json:"expiredAt"`
 	CreatedAt   int64                 `json:"createdAt"`
 	Status      string                `json:"status"`
-}
-
-func UpdateTotp2FA(account core.Account, url, totpCode string) (string, error) {
-	key, err := otp.NewKeyFromURL(url)
-	if err != nil {
-		return "", errorCode.ErrUnauthorized
-	}
-	if !totp.Validate(totpCode, key.Secret()) {
-		return "", errorCode.ErrUnauthorized
-	}
-	account.Totp = &url
-	DB.Save(&account)
-	return *account.Totp, nil
-}
-
-func CreateTotp(account core.Account) string {
-	key, _ := totp.Generate(totp.GenerateOpts{
-		Issuer:      "cloud.boardware.com",
-		AccountName: account.Email,
-	})
-	return key.String()
-}
-
-func DeleteTotp(account core.Account) {
-	account.Totp = nil
-	accountRepository.Save(&account)
-}
-
-func CreateSessionWithTickets(email string, tokens []string) (*Session, error) {
-	account := accountRepository.GetByEmail(email)
-	if account == nil {
-		return nil, fault.ErrUnauthorized
-	}
-
-	if !account.ColdDown(500) {
-		return nil, errorCode.ErrTooManyRequests
-	}
-	account.CreateColdDown()
-	err := NFactor(*account, tokens, 2)
-	if err != nil {
-		return nil, errorCode.ErrUnauthorized
-	}
-	expiredAt := time.Now().AddDate(0, 0, 7).Unix()
-	token, _ := utils.SignJwt(
-		utils.UintToString(account.ID()),
-		account.Email,
-		string(account.Role),
-		expiredAt,
-		"ACTIVED",
-	)
-	return &Session{
-		Token:       token,
-		TokenFormat: constants.JWT,
-		TokeType:    constants.BEARER,
-		ExpiredAt:   expiredAt,
-	}, nil
 }
 
 func GetAuthenticationFactors(email string) []authenication.AuthenticationFactor {
@@ -108,63 +63,11 @@ func GetAuthenticationFactors(email string) []authenication.AuthenticationFactor
 	return factors
 }
 
-func CreateAccount(email, password string, role constants.Role) (*model.Account, error) {
-	account, err := accountRepository.Create(email, password, role)
-	if err != nil {
-		return nil, err
-	}
-	return &model.Account{Entity: *account}, nil
-}
-
-func GetAccountByEmail(email string) *model.Account {
-	var account *core.Account = accountRepository.GetByEmail(email)
-	if account == nil {
-		return nil
-	}
-	return &model.Account{Entity: *account}
-}
-
-func CreateAccountWithVerificationCode(email, code, password string) (*model.Account, error) {
-	if email == "" {
-		return nil, errorCode.ErrBadRequest
-	}
-	verificationCode := verificationCodeRepository.Get(email, constants.CREATE_ACCOUNT)
-	if !verify(verificationCode, code) {
-		return nil, errorCode.ErrVerificationCode
-	}
-	DB.Delete(&verificationCode)
-	return CreateAccount(email, password, constants.USER)
-}
-
-func UpdatePassword(email string, password *string, code *string, newPassword string) error {
-	var account *core.Account = accountRepository.GetByEmail(email)
-	if account == nil {
-		return errorCode.ErrNotFound
-	}
-	if password != nil {
-		if !utils.PasswordsMatch(account.Password, *password, account.Salt) {
-			return errorCode.ErrUnauthorized
-		}
-		accountRepository.Save(account.SetPassword(newPassword))
-		return nil
-	}
-	if code != nil {
-		verificationCode := verificationCodeRepository.Get(email, constants.SET_PASSWORD)
-		if !verify(verificationCode, *code) {
-			return errorCode.ErrVerificationCode
-		}
-		verificationCodeRepository.Delete(email, constants.SET_PASSWORD)
-		accountRepository.Save(account.SetPassword(newPassword))
-		return nil
-	}
-	return errorCode.ErrVerificationCode
-}
-
 func UpdateUserRole(accountId, role constants.Role) {
 	// TODO:
 }
 
-func ListAccount(index, limit int64) common.List[model.Account] {
+func ListAccount(index, limit int64) common.List[Account] {
 	return AccountListBackward(core.ListAccount(index, limit))
 }
 

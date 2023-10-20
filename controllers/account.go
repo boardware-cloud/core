@@ -266,12 +266,26 @@ func (AccountApi) ListAccount(ctx *gin.Context, ordering api.Ordering, index int
 		})
 }
 
+func getAccount(ctx *gin.Context) *core.Account {
+	accountInterface, ok := ctx.Get("account")
+	if !ok {
+		fault.GinHandler(ctx, fault.ErrUnauthorized)
+		return nil
+	}
+	account, ok := accountInterface.(core.Account)
+	if !ok {
+		fault.GinHandler(ctx, fault.ErrUnauthorized)
+		return nil
+	}
+	return &account
+}
+
 func (AccountApi) GetAccount(ctx *gin.Context) {
-	middleware.GetAccount(ctx,
-		func(c *gin.Context, a model.Account) {
-			account := accountService.GetAccount(a.ID())
-			c.JSON(http.StatusOK, AccountBackward(*account))
-		})
+	account := getAccount(ctx)
+	if account == nil {
+		return
+	}
+	ctx.JSON(http.StatusOK, AccountBackward(*account))
 }
 
 func GetAccountById(id string) *api.Account {

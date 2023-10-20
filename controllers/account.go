@@ -11,7 +11,6 @@ import (
 	"github.com/boardware-cloud/common/utils"
 	api "github.com/boardware-cloud/core-api"
 	core "github.com/boardware-cloud/core/services"
-	servicesModel "github.com/boardware-cloud/core/services"
 	"github.com/boardware-cloud/middleware"
 	model "github.com/boardware-cloud/model/core"
 	"github.com/chenyunda218/golambda"
@@ -254,7 +253,7 @@ func (AccountApi) ListAccount(ctx *gin.Context, ordering api.Ordering, index int
 		func(ctx *gin.Context, account model.Account) {
 			list := core.ListAccount(index, limit)
 			ctx.JSON(http.StatusOK, api.AccountList{
-				Data: golambda.Map(list.Data, func(_ int, account servicesModel.Account) api.Account {
+				Data: golambda.Map(list.Data, func(_ int, account core.Account) api.Account {
 					return AccountBackward(account)
 				}),
 				Pagination: api.Pagination{

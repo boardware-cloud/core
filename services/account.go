@@ -37,6 +37,10 @@ func (a Account) RegisteredOn() time.Time {
 	return a.Entity.CreatedAt
 }
 
+func (a Account) ListWebAuthn(account core.Account) []core.Credential {
+	return webauthRepository.List("account_id = ?", account.ID())
+}
+
 type Session struct {
 	Token       string                `json:"token"`
 	TokeType    constants.TokenType   `json:"tokenType"`

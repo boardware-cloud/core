@@ -34,7 +34,7 @@ func init() {
 }
 
 func DeleteWebAuthn(account core.Account, id uint) error {
-	ctx := DB.Where("account_id = ? AND id = ?", account.ID, id).Delete(&core.Credential{})
+	ctx := DB.Where("account_id = ? AND id = ?", account.ID(), id).Delete(&core.Credential{})
 	if ctx.RowsAffected == 0 {
 		return errorCode.ErrNotFound
 	}
@@ -43,7 +43,7 @@ func DeleteWebAuthn(account core.Account, id uint) error {
 
 func ListWebAuthn(account core.Account) []core.Credential {
 	var webauthns []core.Credential = make([]core.Credential, 0)
-	DB.Where("account_id = ?", account.ID).Find(&webauthns)
+	DB.Where("account_id = ?", account.ID()).Find(&webauthns)
 	return webauthns
 }
 

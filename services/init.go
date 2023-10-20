@@ -16,6 +16,7 @@ var emailSender notifications.Sender
 var accountRepository core.AccountRepository
 var verificationCodeRepository core.VerificationCodeRepository
 var ticketRepository core.TicketRepository
+var webauthRepository core.WebauthRepository
 
 func init() {
 	viper.SetConfigName("env")
@@ -43,4 +44,5 @@ func init() {
 	accountRepository = core.NewAccountRepository(DB)
 	verificationCodeRepository = core.NewVerificationCodeRepository(DB)
 	ticketRepository = core.NewTicketRepository(DB)
+	webauthRepository = core.NewWebauthRepository(DB)
 }

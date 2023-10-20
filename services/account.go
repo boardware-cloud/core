@@ -18,6 +18,14 @@ import (
 const EXPIRED_TIME = 60 * 5
 const MAX_TRIES = 10
 
+func GetAccountById(id uint) *model.Account {
+	account := accountRepository.GetById(id)
+	if account == nil {
+		return nil
+	}
+	return &model.Account{Entity: *account}
+}
+
 type Session struct {
 	Token       string                `json:"token"`
 	TokeType    constants.TokenType   `json:"tokenType"`
@@ -106,14 +114,6 @@ func CreateAccount(email, password string, role constants.Role) (*model.Account,
 		return nil, err
 	}
 	return &model.Account{Entity: *account}, nil
-}
-
-func GetAccountById(id uint) *model.Account {
-	account := accountRepository.GetById(id)
-	if account == nil {
-		return nil
-	}
-	return &model.Account{Entity: *account}
 }
 
 func GetAccountByEmail(email string) *model.Account {

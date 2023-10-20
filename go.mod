@@ -3,6 +3,7 @@ module github.com/boardware-cloud/core
 go 1.21
 
 require (
+	github.com/Dparty/common v0.0.0-20230929033726-ff769bca8c94
 	github.com/boardware-cloud/middleware v0.0.0-20231016020416-3575f36e0e79
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-webauthn/webauthn v0.8.6
@@ -12,7 +13,6 @@ require (
 )
 
 require (
-	github.com/Dparty/common v0.0.0-20230929033726-ff769bca8c94 // indirect
 	github.com/boombuler/barcode v1.0.1 // indirect
 	github.com/fxamacker/cbor/v2 v2.5.0 // indirect
 	github.com/go-webauthn/x v0.1.4 // indirect
@@ -25,7 +25,7 @@ require (
 require (
 	github.com/boardware-cloud/common v0.0.0-20231011014717-edbec7094e77
 	github.com/boardware-cloud/core-api v0.0.0-20230914064026-7c514533c0f0
-	github.com/boardware-cloud/model v0.0.0-20231018022711-21ae40eb1b64
+	github.com/boardware-cloud/model v0.0.0-20231020031228-de27b2400070
 	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/bytedance/sonic v1.10.1 // indirect
 	github.com/chenyunda218/golambda v0.0.0-20230809035428-25245dc9a8bd

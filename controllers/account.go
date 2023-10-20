@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/Dparty/common/fault"
@@ -204,18 +205,19 @@ func (AccountApi) CreateTotp2FA(c *gin.Context, request api.PutTotpRequest) {
 }
 
 func (AccountApi) CreateSession(c *gin.Context, createSessionRequest api.CreateSessionRequest) {
-	if createSessionRequest.Tickets != nil {
-		session, sessionError := core.CreateSessionWithTickets(*createSessionRequest.Email, *createSessionRequest.Tickets)
-		if sessionError != nil {
-			errorCode.GinHandler(c, sessionError)
-			return
-		}
-		c.JSON(http.StatusCreated, api.Token{
-			Secret:      session.Token,
-			TokenType:   "JWT",
-			TokenFormat: "bearer",
-		})
-	}
+	fmt.Println(createSessionRequest)
+	// if createSessionRequest.Tickets != nil {
+	// 	session, sessionError := core.CreateSessionWithTickets(*createSessionRequest.Email, *createSessionRequest.Tickets)
+	// 	if sessionError != nil {
+	// 		errorCode.GinHandler(c, sessionError)
+	// 		return
+	// 	}
+	// 	c.JSON(http.StatusCreated, api.Token{
+	// 		Secret:      session.Token,
+	// 		TokenType:   "JWT",
+	// 		TokenFormat: "bearer",
+	// 	})
+	// }
 }
 
 func (AccountApi) CreateAccount(c *gin.Context, createAccountRequest api.CreateAccountRequest) {

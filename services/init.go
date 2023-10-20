@@ -2,6 +2,7 @@ package services
 
 import (
 	"github.com/boardware-cloud/common/notifications"
+	"github.com/boardware-cloud/common/utils"
 	"github.com/boardware-cloud/model"
 	"github.com/boardware-cloud/model/core"
 	"github.com/spf13/viper"
@@ -14,6 +15,7 @@ var emailSender notifications.Sender
 
 var accountRepository core.AccountRepository
 var verificationCodeRepository core.VerificationCodeRepository
+var ticketRepository core.TicketRepository
 
 func init() {
 	viper.SetConfigName("env")
@@ -36,7 +38,9 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	core.Init(DB)
+	utils.Init()
 	accountRepository = core.NewAccountRepository(DB)
 	verificationCodeRepository = core.NewVerificationCodeRepository(DB)
-	core.Init(DB)
+	ticketRepository = core.NewTicketRepository(DB)
 }

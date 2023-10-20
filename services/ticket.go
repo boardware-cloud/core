@@ -48,7 +48,7 @@ func createTotpTicket(account core.Account, totpCode string) (string, error) {
 	if !totp.Validate(totpCode, key.Secret()) {
 		return "", errorCode.ErrUnauthorized
 	}
-	return TicketString(createTicket("TOTP", account.ID())), nil
+	return TicketString(ticketRepository.CreateTicket("TOTP", account.ID())), nil
 }
 
 func createEmailTicket(account core.Account, verificationCode string) (string, error) {
@@ -57,23 +57,14 @@ func createEmailTicket(account core.Account, verificationCode string) (string, e
 		return "", errorCode.ErrVerificationCode
 	}
 	verificationCodeRepository.Delete(account.Email, constants.TICKET)
-	return TicketString(createTicket("EMAIL", account.ID())), nil
+	return TicketString(ticketRepository.CreateTicket("TOTP", account.ID())), nil
 }
 
 func createPasswordTicket(account core.Account, password string) (string, error) {
 	if !utils.PasswordsMatch(account.Password, password, account.Salt) {
 		return "", errorCode.ErrUnauthorized
 	}
-	return TicketString(createTicket("PASSWORD", account.ID())), nil
-}
-
-func createTicket(t string, accountId uint) core.Ticket {
-	var ticket core.Ticket
-	ticket.AccountId = accountId
-	ticket.Secret = RandomNumberString(16)
-	ticket.Type = t
-	DB.Save(&ticket)
-	return ticket
+	return TicketString(ticketRepository.CreateTicket("TOTP", account.ID())), nil
 }
 
 func TicketString(ticket core.Ticket) string {

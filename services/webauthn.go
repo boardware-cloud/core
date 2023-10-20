@@ -103,5 +103,5 @@ func FinishLogin(sessionId uint, car *protocol.ParsedCredentialAssertionData) (s
 	if err != nil {
 		return "", errorCode.ErrUnauthorized
 	}
-	return TicketString(createTicket("WEBAUTHN", account.ID())), nil
+	return TicketString(ticketRepository.CreateTicket("WEBAUTHN", account.ID())), nil
 }

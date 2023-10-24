@@ -24,9 +24,9 @@ func init() {
 	}
 	domain = viper.GetString("boardware.web.domain")
 	wconfig := &webauthn.Config{
-		RPDisplayName: "Boardware Cloud",                                      // Display Name for your site
-		RPID:          domain,                                                 // Generally the FQDN for your site
-		RPOrigins:     []string{"https://" + domain, "http://localhost:3000"}, // The origin URLs allowed for WebAuthn requests
+		RPDisplayName: "Boardware Cloud",
+		RPID:          domain,
+		RPOrigins:     []string{"https://" + domain, "http://localhost:3000"},
 	}
 	if authn, err = webauthn.New(wconfig); err != nil {
 		panic(err)

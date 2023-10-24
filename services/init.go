@@ -2,7 +2,6 @@ package services
 
 import (
 	"github.com/boardware-cloud/common/notifications"
-	"github.com/boardware-cloud/common/utils"
 	coreModel "github.com/boardware-cloud/model/core"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
@@ -21,7 +20,6 @@ var ticketService TicketService
 func Init(db *gorm.DB) {
 	DB = db
 	coreModel.Init(DB)
-	utils.Init()
 	viper.SetConfigName("env")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("./config")

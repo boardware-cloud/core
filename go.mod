@@ -23,7 +23,7 @@ require (
 )
 
 require (
-	github.com/boardware-cloud/common v0.0.0-20231024072106-bff7163111b3
+	github.com/boardware-cloud/common v0.0.0-20231024090001-790d2f6126bc
 	github.com/boardware-cloud/core-api v0.0.0-20230914064026-7c514533c0f0
 	github.com/boardware-cloud/model v0.0.0-20231024073442-524cf3c24ff7
 	github.com/bwmarrin/snowflake v0.3.0 // indirect

@@ -24,7 +24,6 @@ type TicketService struct {
 
 func (t TicketService) CreateTicket(email, ticketType string, password, verificationCode, totpCode *string) (string, error) {
 	var account core.Account
-	// t.ticketRepository.Find()
 	ctx := DB.Where("email = ?", email).Find(&account)
 	if ctx.RowsAffected == 0 {
 		return "", errorCode.ErrNotFound

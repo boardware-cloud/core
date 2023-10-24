@@ -33,8 +33,8 @@ func init() {
 	}
 }
 
-func BeginRegistration(account core.Account) (*protocol.CredentialCreation, core.SessionData) {
-	options, session, _ := authn.BeginRegistration(account)
+func BeginRegistration(account Account) (*protocol.CredentialCreation, core.SessionData) {
+	options, session, _ := authn.BeginRegistration(account.Entity)
 	sessionData := core.SessionData{
 		AccountId: account.ID(),
 		Data:      core.WebAuthnSessionData(*session),
@@ -43,7 +43,7 @@ func BeginRegistration(account core.Account) (*protocol.CredentialCreation, core
 	return options, sessionData
 }
 
-func FinishRegistration(account core.Account, sessionId uint, name, os string, ccr protocol.CredentialCreationResponse) error {
+func FinishRegistration(account Account, sessionId uint, name, os string, ccr protocol.CredentialCreationResponse) error {
 	response, err := ccr.Parse()
 	if err != nil {
 		return errorCode.ErrUnauthorized
@@ -53,7 +53,7 @@ func FinishRegistration(account core.Account, sessionId uint, name, os string, c
 	if ctx.RowsAffected == 0 {
 		return errorCode.ErrNotFound
 	}
-	user, err := authn.CreateCredential(account, webauthn.SessionData(session.Data), response)
+	user, err := authn.CreateCredential(account.Entity, webauthn.SessionData(session.Data), response)
 	if err != nil {
 		return errorCode.ErrUnauthorized
 	}

@@ -137,14 +137,15 @@ func (AccountApi) CreateWebauthnTicketChallenge(ctx *gin.Context, request api.Cr
 
 // CreateWebAuthnChallenge implements coreapi.AccountApiInterface.
 func (AccountApi) CreateWebAuthnChallenge(ctx *gin.Context) {
-	middleware.GetAccount(ctx,
-		func(ctx *gin.Context, account model.Account) {
-			options, session := core.BeginRegistration(account)
-			ctx.JSON(http.StatusOK, gin.H{
-				"id":        utils.UintToString(session.ID),
-				"publicKey": options.Response,
-			})
-		})
+	account := getAccount(ctx)
+	if account == nil {
+		return
+	}
+	options, session := core.BeginRegistration(*account)
+	ctx.JSON(http.StatusOK, gin.H{
+		"id":        utils.UintToString(session.ID),
+		"publicKey": options.Response,
+	})
 }
 
 type Credential struct {
@@ -155,49 +156,53 @@ type Credential struct {
 
 // CreateWebauthn implements coreapi.AccountApiInterface.
 func (AccountApi) CreateWebauthn(ctx *gin.Context, id string) {
-	middleware.GetAccount(ctx,
-		func(ctx *gin.Context, account model.Account) {
-			var ccr Credential
-			if err := json.NewDecoder(ctx.Copy().Request.Body).Decode(&ccr); err != nil {
-				ctx.JSON(http.StatusBadRequest, "")
-				return
-			}
-			if err := core.FinishRegistration(
-				account,
-				utils.StringToUint(id),
-				ccr.Name,
-				ccr.Os,
-				ccr.CredentialCreationResponse); err != nil {
-				errorCode.GinHandler(ctx, err)
-				return
-			}
-			ctx.JSON(http.StatusCreated, "")
-		})
+	account := getAccount(ctx)
+	if account == nil {
+		return
+	}
+	var ccr Credential
+	if err := json.NewDecoder(ctx.Copy().Request.Body).Decode(&ccr); err != nil {
+		ctx.JSON(http.StatusBadRequest, "")
+		return
+	}
+	if err := core.FinishRegistration(
+		*account,
+		utils.StringToUint(id),
+		ccr.Name,
+		ccr.Os,
+		ccr.CredentialCreationResponse); err != nil {
+		errorCode.GinHandler(ctx, err)
+		return
+	}
+	ctx.JSON(http.StatusCreated, "")
 }
 
 // GetTotp implements coreapi.AccountApiInterface.
-func (AccountApi) GetTotp(c *gin.Context) {
-	middleware.GetAccount(c,
-		func(c *gin.Context, account model.Account) {
-			c.JSON(http.StatusOK, api.Totp{Url: accountService.CreateTotp(account)})
-		})
+func (AccountApi) GetTotp(ctx *gin.Context) {
+	account := getAccount(ctx)
+	if account == nil {
+		return
+	}
+	ctx.JSON(http.StatusOK, api.Totp{Url: accountService.CreateTotp(account.Entity)})
 }
 
 // CreateTotp2FA implements coreapi.AccountApiInterface.
-func (AccountApi) CreateTotp2FA(c *gin.Context, request api.PutTotpRequest) {
-	middleware.GetAccount(c, func(c *gin.Context, account model.Account) {
-		if err := core.NFactor(account, request.Tickets, 1); err != nil {
-			errorCode.GinHandler(c, err)
-			return
-		}
-		url, err := accountService.UpdateTotp2FA(account, request.Url, request.TotpCode)
-		if err != nil {
-			errorCode.GinHandler(c, err)
-			return
-		}
-		c.JSON(http.StatusOK, api.Totp{
-			Url: url,
-		})
+func (AccountApi) CreateTotp2FA(ctx *gin.Context, request api.PutTotpRequest) {
+	account := getAccount(ctx)
+	if account == nil {
+		return
+	}
+	if err := core.NFactor(account.Entity, request.Tickets, 1); err != nil {
+		errorCode.GinHandler(ctx, err)
+		return
+	}
+	url, err := accountService.UpdateTotp2FA(account.Entity, request.Url, request.TotpCode)
+	if err != nil {
+		errorCode.GinHandler(ctx, err)
+		return
+	}
+	ctx.JSON(http.StatusOK, api.Totp{
+		Url: url,
 	})
 }
 
@@ -214,37 +219,40 @@ func (AccountApi) CreateSession(c *gin.Context, createSessionRequest api.CreateS
 			TokenFormat: "bearer",
 		})
 	}
+
 }
 
-func (AccountApi) CreateAccount(c *gin.Context, createAccountRequest api.CreateAccountRequest) {
+func (AccountApi) CreateAccount(ctx *gin.Context, createAccountRequest api.CreateAccountRequest) {
 	if createAccountRequest.VerificationCode != nil {
 		a, createError := accountService.CreateAccountWithVerificationCode(
 			createAccountRequest.Email,
 			*createAccountRequest.VerificationCode,
 			createAccountRequest.Password)
 		if createError != nil {
-			errorCode.GinHandler(c, createError)
+			errorCode.GinHandler(ctx, createError)
 			return
 		}
-		c.JSON(http.StatusCreated, AccountBackward(*a))
+		ctx.JSON(http.StatusCreated, AccountBackward(*a))
 		return
 	}
-	middleware.IsRoot(c, func(_ *gin.Context, _ model.Account) {
-		role := constants.USER
-		if createAccountRequest.Role != nil {
-			role = constants.Role(*createAccountRequest.Role)
-		}
-		a, createError := accountService.CreateAccount(
-			createAccountRequest.Email,
-			createAccountRequest.Password,
-			role,
-		)
-		if createError != nil {
-			errorCode.GinHandler(c, createError)
-			return
-		}
-		c.JSON(http.StatusCreated, AccountBackward(*a))
-	})
+	account := checkIfRoot(ctx)
+	if account == nil {
+		return
+	}
+	role := constants.USER
+	if createAccountRequest.Role != nil {
+		role = constants.Role(*createAccountRequest.Role)
+	}
+	a, createError := accountService.CreateAccount(
+		createAccountRequest.Email,
+		createAccountRequest.Password,
+		role,
+	)
+	if createError != nil {
+		errorCode.GinHandler(ctx, createError)
+		return
+	}
+	ctx.JSON(http.StatusCreated, AccountBackward(*a))
 }
 
 func (AccountApi) ListAccount(ctx *gin.Context, ordering api.Ordering, index int64, limit int64, roles []string, email string) {

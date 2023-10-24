@@ -143,3 +143,35 @@ func (a AccountService) CreateSessionWithTickets(email string, tokens []string) 
 		ExpiredAt:   expiredAt,
 	}, nil
 }
+
+func CheckIfRoot(ctx *gin.Context) *Account {
+	accountInterface, ok := ctx.Get("account")
+	if !ok {
+		fault.GinHandler(ctx, fault.ErrUnauthorized)
+		return nil
+	}
+	account, ok := accountInterface.(Account)
+	if !ok {
+		fault.GinHandler(ctx, fault.ErrUnauthorized)
+		return nil
+	}
+	if account.Role() != "ROOT" {
+		fault.GinHandler(ctx, fault.ErrPermissionDenied)
+		return nil
+	}
+	return &account
+}
+
+func GetAccount(ctx *gin.Context) *Account {
+	accountInterface, ok := ctx.Get("account")
+	if !ok {
+		fault.GinHandler(ctx, fault.ErrUnauthorized)
+		return nil
+	}
+	account, ok := accountInterface.(Account)
+	if !ok {
+		fault.GinHandler(ctx, fault.ErrUnauthorized)
+		return nil
+	}
+	return &account
+}

@@ -9,8 +9,7 @@ import (
 
 	errorCode "github.com/boardware-cloud/common/code"
 	constants "github.com/boardware-cloud/common/constants/account"
-	"github.com/boardware-cloud/model/core"
-	model "github.com/boardware-cloud/model/core"
+	coreModel "github.com/boardware-cloud/model/core"
 	"gorm.io/gorm"
 )
 
@@ -31,11 +30,11 @@ func RandomNumberString(length int) string {
 }
 
 func NewVerificationCodeService(db *gorm.DB) VerificationCodeService {
-	return VerificationCodeService{verificationCodeRepository: core.NewVerificationCodeRepository(db)}
+	return VerificationCodeService{verificationCodeRepository: coreModel.NewVerificationCodeRepository(db)}
 }
 
 type VerificationCodeService struct {
-	verificationCodeRepository core.VerificationCodeRepository
+	verificationCodeRepository coreModel.VerificationCodeRepository
 }
 
 func (v VerificationCodeService) CreateVerificationCode(identity string, purpose constants.VerificationCodePurpose) error {
@@ -47,13 +46,13 @@ func (v VerificationCodeService) CreateVerificationCode(identity string, purpose
 	if purpose == constants.SET_PASSWORD && account == nil {
 		return errorCode.ErrNotFound
 	}
-	var verificationCode model.VerificationCode
+	var verificationCode coreModel.VerificationCode
 	ctx := DB.Where("identity = ? AND purpose = ?",
 		identity,
 		purpose,
 	).Order("created_at DESC").Find(&verificationCode)
 	if ctx.RowsAffected == 0 || time.Now().Unix()-verificationCode.CreatedAt.Unix() >= 60 {
-		newCode := &model.VerificationCode{
+		newCode := &coreModel.VerificationCode{
 			Identity: identity,
 			Purpose:  purpose,
 			Code:     RandomNumberString(6),
@@ -70,7 +69,7 @@ func (v VerificationCodeService) CreateVerificationCode(identity string, purpose
 		if err != nil {
 			return errorCode.ErrUndefined
 		}
-		code := &model.VerificationCode{Identity: identity, Purpose: purpose}
+		code := &coreModel.VerificationCode{Identity: identity, Purpose: purpose}
 		DB.Where(code).Delete(code)
 		DB.Save(&newCode)
 		return nil

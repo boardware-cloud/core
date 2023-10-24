@@ -17,6 +17,7 @@ var ticketRepository core.TicketRepository
 var webauthRepository core.WebauthRepository
 
 func Init(db *gorm.DB) {
+	DB = db
 	core.Init(DB)
 	utils.Init()
 	accountRepository = core.NewAccountRepository(DB)

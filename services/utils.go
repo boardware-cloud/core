@@ -40,7 +40,7 @@ func Authorize(c *gin.Context) Authentication {
 
 func AuthorizeByJWT(token string) Authentication {
 	claims, err := utils.VerifyJwt(token)
-	if err != nil {
+	if err != nil || claims == nil {
 		return Authentication{
 			Status: Unauthorized,
 		}

@@ -185,14 +185,11 @@ func (AccountApi) GetTotp(c *gin.Context) {
 // CreateTotp2FA implements coreapi.AccountApiInterface.
 func (AccountApi) CreateTotp2FA(c *gin.Context, request api.PutTotpRequest) {
 	middleware.GetAccount(c, func(c *gin.Context, account model.Account) {
-		var err error
-		err = core.NFactor(account, request.Tickets, 1)
-		if err != nil {
+		if err := core.NFactor(account, request.Tickets, 1); err != nil {
 			errorCode.GinHandler(c, err)
 			return
 		}
-		var url string
-		url, err = accountService.UpdateTotp2FA(account, request.Url, request.TotpCode)
+		url, err := accountService.UpdateTotp2FA(account, request.Url, request.TotpCode)
 		if err != nil {
 			errorCode.GinHandler(c, err)
 			return

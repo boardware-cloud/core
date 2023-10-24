@@ -5,7 +5,6 @@ import (
 
 	errorCode "github.com/boardware-cloud/common/code"
 	coreapi "github.com/boardware-cloud/core-api"
-	core "github.com/boardware-cloud/core/services"
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,7 +22,7 @@ func (TicketApi) CreateTicket(c *gin.Context, request coreapi.CreateTicketReques
 		c.JSON(http.StatusBadRequest, "")
 		return
 	}
-	token, err := core.CreateTicket(request.Email, ticketType, request.Password, request.VerificationCode, request.TotpCode)
+	token, err := ticketService.CreateTicket(request.Email, ticketType, request.Password, request.VerificationCode, request.TotpCode)
 	if err != nil {
 		errorCode.GinHandler(c, err)
 		return

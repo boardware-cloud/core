@@ -13,33 +13,6 @@ import (
 	"github.com/pquerna/otp/totp"
 )
 
-func CreateTicket(email, ticketType string, password, verificationCode, totpCode *string) (string, error) {
-	var account core.Account
-	ctx := DB.Where("email = ?", email).Find(&account)
-	if ctx.RowsAffected == 0 {
-		return "", errorCode.ErrNotFound
-	}
-	if !account.ColdDown(500) {
-		return "", errorCode.ErrTooManyRequests
-	}
-	account.CreateColdDown()
-	switch ticketType {
-	case "PASSWORD":
-		if password != nil {
-			return createPasswordTicket(account, *password)
-		}
-	case "TOTP":
-		if totpCode != nil {
-			return createTotpTicket(account, *totpCode)
-		}
-	case "EMAIL":
-		if verificationCode != nil {
-			return createEmailTicket(account, *verificationCode)
-		}
-	}
-	return "", errorCode.ErrUnauthorized
-}
-
 func createTotpTicket(account core.Account, totpCode string) (string, error) {
 	key, _ := otp.NewKeyFromURL(*account.Totp)
 	if account.Totp == nil {

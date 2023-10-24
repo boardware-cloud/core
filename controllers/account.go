@@ -219,7 +219,6 @@ func (AccountApi) CreateSession(c *gin.Context, createSessionRequest api.CreateS
 			TokenFormat: "bearer",
 		})
 	}
-
 }
 
 func (AccountApi) CreateAccount(ctx *gin.Context, createAccountRequest api.CreateAccountRequest) {

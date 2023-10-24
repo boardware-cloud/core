@@ -115,7 +115,7 @@ func (a AccountService) UpdateTotp2FA(account core.Account, url, totpCode string
 }
 
 func (a AccountService) CreateSessionWithTickets(email string, tokens []string) (*Session, error) {
-	account := accountRepository.GetByEmail(email)
+	account := a.accountRepository.GetByEmail(email)
 	if account == nil {
 		return nil, fault.ErrUnauthorized
 	}

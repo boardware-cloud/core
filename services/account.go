@@ -89,7 +89,7 @@ func ListAccount(index, limit int64) common.List[Account] {
 func NFactor(account core.Account, tokens []string, factor int) error {
 	var fa map[string]bool = make(map[string]bool)
 	for _, token := range tokens {
-		ticket, err := UseTicket(token)
+		ticket, err := ticketService.UseTicket(token)
 		if err != nil {
 			return errorCode.ErrUnauthorized
 		}
@@ -108,7 +108,7 @@ func verify(v *core.VerificationCode, code string) bool {
 		return false
 	}
 	v.Tries++
-	DB.Save(v)
+	verificationCodeRepository.Save(v)
 	if v.Code != code || time.Now().Unix()-v.CreatedAt.Unix() > EXPIRED_TIME || v.Tries > MAX_TRIES {
 		return false
 	}

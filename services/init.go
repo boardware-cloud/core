@@ -15,6 +15,7 @@ var accountRepository coreModel.AccountRepository
 var verificationCodeRepository coreModel.VerificationCodeRepository
 var ticketRepository coreModel.TicketRepository
 var webauthRepository coreModel.WebauthRepository
+var ticketService TicketService
 
 func Init(db *gorm.DB) {
 	DB = db
@@ -24,4 +25,5 @@ func Init(db *gorm.DB) {
 	verificationCodeRepository = coreModel.NewVerificationCodeRepository(DB)
 	ticketRepository = coreModel.NewTicketRepository(DB)
 	webauthRepository = coreModel.NewWebauthRepository(DB)
+	ticketService = NewTicketService(db)
 }

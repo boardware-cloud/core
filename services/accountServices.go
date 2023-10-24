@@ -124,7 +124,7 @@ func (a AccountService) CreateSessionWithTickets(email string, tokens []string) 
 		return nil, errorCode.ErrTooManyRequests
 	}
 	account.CreateColdDown()
-	err := NFactor(*account, tokens, 2)
+	err := NFactor(*account, tokens, 1)
 	if err != nil {
 		return nil, errorCode.ErrUnauthorized
 	}

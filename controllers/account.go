@@ -32,24 +32,26 @@ func (AccountApi) ListSession(gin_context *gin.Context) {
 }
 
 func (AccountApi) GetAccountById(ctx *gin.Context, id string) {
-	middleware.IsRoot(ctx,
-		func(ctx *gin.Context, account model.Account) {
-			a := GetAccountById(id)
-			if a == nil {
-				errorCode.GinHandler(ctx, errorCode.ErrNotFound)
-				return
-			}
-			ctx.JSON(http.StatusOK, a)
-		})
+	account := checkIfRoot(ctx)
+	if account == nil {
+		return
+	}
+	a := GetAccountById(id)
+	if a == nil {
+		errorCode.GinHandler(ctx, errorCode.ErrNotFound)
+		return
+	}
+	ctx.JSON(http.StatusOK, a)
 }
 
 // DeleteTotp implements coreapi.AccountApiInterface.
 func (AccountApi) DeleteTotp(ctx *gin.Context) {
-	middleware.GetAccount(ctx,
-		func(ctx *gin.Context, account model.Account) {
-			accountService.DeleteTotp(account)
-			ctx.JSON(http.StatusNoContent, "")
-		})
+	account := getAccount(ctx)
+	if account == nil {
+		return
+	}
+	account.DeleteTotp()
+	ctx.JSON(http.StatusNoContent, "")
 }
 
 // GetAuthentication implements coreapi.AccountApiInterface.
@@ -71,14 +73,12 @@ func (AccountApi) GetAuthentication(ctx *gin.Context, email string) {
 
 // DeleteWebAuthn implements coreapi.AccountApiInterface.
 func (AccountApi) DeleteWebAuthn(ctx *gin.Context, id string) {
-	middleware.GetAccount(ctx, func(c *gin.Context, account model.Account) {
-		err := core.DeleteWebAuthn(account, utils.StringToUint(id))
-		if err != nil {
-			errorCode.GinHandler(ctx, err)
-			return
-		}
-		ctx.JSON(http.StatusNoContent, "")
-	})
+	account := getAccount(ctx)
+	if account == nil {
+		return
+	}
+	account.DeleteWebAuthn(utils.StringToUint(id))
+	ctx.JSON(http.StatusNoContent, "")
 }
 
 // CreateWebauthnTickets implements coreapi.AccountApiInterface.
@@ -101,19 +101,20 @@ func (AccountApi) CreateWebauthnTickets(ctx *gin.Context, id string) {
 
 // ListWebAuthn implements coreapi.AccountApiInterface.
 func (AccountApi) ListWebAuthn(ctx *gin.Context) {
-	middleware.GetAccount(ctx, func(ctx *gin.Context, account model.Account) {
-		a := accountService.GetAccount(account.ID())
-		webauthns := a.ListWebAuthn()
-		ctx.JSON(http.StatusOK, golambda.Map(webauthns,
-			func(_ int, cred model.Credential) api.WebAuthn {
-				return api.WebAuthn{
-					Id:        utils.UintToString(cred.ID),
-					Name:      cred.Name,
-					Os:        cred.Os,
-					CreatedAt: cred.CreatedAt.Unix(),
-				}
-			}))
-	})
+	account := getAccount(ctx)
+	if account == nil {
+		return
+	}
+	webauthns := account.ListWebAuthn()
+	ctx.JSON(http.StatusOK, golambda.Map(webauthns,
+		func(_ int, cred model.Credential) api.WebAuthn {
+			return api.WebAuthn{
+				Id:        utils.UintToString(cred.ID),
+				Name:      cred.Name,
+				Os:        cred.Os,
+				CreatedAt: cred.CreatedAt.Unix(),
+			}
+		}))
 }
 
 // CreateWebauthnTicketChallenge implements coreapi.AccountApiInterface.
@@ -247,34 +248,21 @@ func (AccountApi) CreateAccount(c *gin.Context, createAccountRequest api.CreateA
 }
 
 func (AccountApi) ListAccount(ctx *gin.Context, ordering api.Ordering, index int64, limit int64, roles []string, email string) {
-	middleware.IsRoot(ctx,
-		func(ctx *gin.Context, account model.Account) {
-			list := core.ListAccount(index, limit)
-			ctx.JSON(http.StatusOK, api.AccountList{
-				Data: golambda.Map(list.Data, func(_ int, account core.Account) api.Account {
-					return AccountBackward(account)
-				}),
-				Pagination: api.Pagination{
-					Limit: list.Pagination.Limit,
-					Index: list.Pagination.Index,
-					Total: list.Pagination.Total,
-				},
-			})
-		})
-}
-
-func getAccount(ctx *gin.Context) *core.Account {
-	accountInterface, ok := ctx.Get("account")
-	if !ok {
-		fault.GinHandler(ctx, fault.ErrUnauthorized)
-		return nil
+	account := checkIfRoot(ctx)
+	if account == nil {
+		return
 	}
-	account, ok := accountInterface.(core.Account)
-	if !ok {
-		fault.GinHandler(ctx, fault.ErrUnauthorized)
-		return nil
-	}
-	return &account
+	list := core.ListAccount(index, limit)
+	ctx.JSON(http.StatusOK, api.AccountList{
+		Data: golambda.Map(list.Data, func(_ int, account core.Account) api.Account {
+			return AccountBackward(account)
+		}),
+		Pagination: api.Pagination{
+			Limit: list.Pagination.Limit,
+			Index: list.Pagination.Index,
+			Total: list.Pagination.Total,
+		},
+	})
 }
 
 func (AccountApi) GetAccount(ctx *gin.Context) {
@@ -315,4 +303,36 @@ func (AccountApi) UpdatePassword(c *gin.Context, request api.UpdatePasswordReque
 		return
 	}
 	c.String(http.StatusNoContent, "")
+}
+
+func checkIfRoot(ctx *gin.Context) *core.Account {
+	accountInterface, ok := ctx.Get("account")
+	if !ok {
+		fault.GinHandler(ctx, fault.ErrUnauthorized)
+		return nil
+	}
+	account, ok := accountInterface.(core.Account)
+	if !ok {
+		fault.GinHandler(ctx, fault.ErrUnauthorized)
+		return nil
+	}
+	if account.Role() != "ROOT" {
+		fault.GinHandler(ctx, fault.ErrPermissionDenied)
+		return nil
+	}
+	return &account
+}
+
+func getAccount(ctx *gin.Context) *core.Account {
+	accountInterface, ok := ctx.Get("account")
+	if !ok {
+		fault.GinHandler(ctx, fault.ErrUnauthorized)
+		return nil
+	}
+	account, ok := accountInterface.(core.Account)
+	if !ok {
+		fault.GinHandler(ctx, fault.ErrUnauthorized)
+		return nil
+	}
+	return &account
 }

@@ -41,6 +41,17 @@ func (a Account) ListWebAuthn() []core.Credential {
 	return webauthRepository.List("account_id = ?", a.ID())
 }
 
+func (a *Account) DeleteTotp() *Account {
+	a.Entity.Totp = nil
+	accountRepository.Save(&a.Entity)
+	return a
+}
+
+func (a *Account) DeleteWebAuthn(id uint) *Account {
+	DB.Where("account_id = ? AND id = ?", a.ID(), id).Delete(&core.Credential{})
+	return a
+}
+
 type Session struct {
 	Token       string                `json:"token"`
 	TokeType    constants.TokenType   `json:"tokenType"`

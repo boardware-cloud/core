@@ -2,21 +2,19 @@ package controllers
 
 import (
 	api "github.com/boardware-cloud/core-api"
-	"github.com/boardware-cloud/core/services"
+	coreServices "github.com/boardware-cloud/core/services"
 	"github.com/boardware-cloud/middleware"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 var router *gin.Engine
-var db *gorm.DB
 
-var accountService services.AccountService
+var accountService coreServices.AccountService
 
 func Init(inject *gorm.DB) {
-	db = inject
-	services.Init(db)
-	accountService = services.NewAccountService(db)
+	coreServices.Init(inject)
+	accountService = coreServices.NewAccountService(inject)
 	router = gin.Default()
 	router.Use(accountService.Auth())
 	router.Use(middleware.CorsMiddleware())

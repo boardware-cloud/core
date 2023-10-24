@@ -33,14 +33,6 @@ func init() {
 	}
 }
 
-func DeleteWebAuthn(account core.Account, id uint) error {
-	ctx := DB.Where("account_id = ? AND id = ?", account.ID(), id).Delete(&core.Credential{})
-	if ctx.RowsAffected == 0 {
-		return errorCode.ErrNotFound
-	}
-	return nil
-}
-
 func BeginRegistration(account core.Account) (*protocol.CredentialCreation, core.SessionData) {
 	options, session, _ := authn.BeginRegistration(account)
 	sessionData := core.SessionData{

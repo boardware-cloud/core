@@ -93,11 +93,6 @@ func (a AccountService) UpdatePassword(email string, password *string, code *str
 	return errorCode.ErrVerificationCode
 }
 
-func (a AccountService) DeleteTotp(account core.Account) {
-	account.Totp = nil
-	a.accountRepository.Save(&account)
-}
-
 func (a AccountService) CreateTotp(account core.Account) string {
 	key, _ := totp.Generate(totp.GenerateOpts{
 		Issuer:      "cloud.boardware.com",

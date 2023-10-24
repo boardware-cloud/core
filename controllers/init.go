@@ -4,7 +4,6 @@ import (
 	api "github.com/boardware-cloud/core-api"
 	"github.com/boardware-cloud/core/services"
 	"github.com/boardware-cloud/middleware"
-	model "github.com/boardware-cloud/model/core"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -16,7 +15,7 @@ var accountService services.AccountService
 
 func Init(inject *gorm.DB) {
 	db = inject
-	model.Init(db)
+	services.Init(db)
 	accountService = services.NewAccountService(db)
 	router = gin.Default()
 	router.Use(accountService.Auth())

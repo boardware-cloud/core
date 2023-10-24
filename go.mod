@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/Dparty/common v0.0.0-20230929033726-ff769bca8c94
-	github.com/boardware-cloud/middleware v0.0.0-20231016020416-3575f36e0e79
+	github.com/boardware-cloud/middleware v0.0.0-20231024014125-aa24c283849e
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-webauthn/webauthn v0.8.6
 	github.com/pquerna/otp v1.4.0

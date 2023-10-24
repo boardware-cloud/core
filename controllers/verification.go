@@ -6,7 +6,6 @@ import (
 	errorCode "github.com/boardware-cloud/common/code"
 	constants "github.com/boardware-cloud/common/constants/account"
 	api "github.com/boardware-cloud/core-api"
-	"github.com/boardware-cloud/core/services"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,16 +16,12 @@ var verificationApi VerificationApi
 const CREATE_INTERVAL = 60
 
 func (VerificationApi) CreateVerificationCode(c *gin.Context, request api.CreateVerificationCodeRequest) {
-	if request.Purpose != api.CREATE_2FA && request.Purpose != api.CREATE_ACCOUNT && request.Purpose != api.SET_PASSWORD && request.Purpose != api.SIGNIN && request.Purpose != api.TICKET {
-		c.JSON(http.StatusBadRequest, "")
-		return
-	}
 	purpose := constants.VerificationCodePurpose(request.Purpose)
 	if request.Email == nil {
 		c.JSON(http.StatusBadRequest, "")
 		return
 	}
-	err := services.CreateVerificationCode(*request.Email, purpose)
+	err := verificationCodeService.CreateVerificationCode(*request.Email, purpose)
 	if err != nil {
 		errorCode.GinHandler(c, err)
 		return

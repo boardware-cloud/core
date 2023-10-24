@@ -13,10 +13,13 @@ var router *gin.Engine
 var accountService coreServices.AccountService
 var ticketService coreServices.TicketService
 
+var verificationCodeService coreServices.VerificationCodeService
+
 func Init(inject *gorm.DB) {
 	coreServices.Init(inject)
 	accountService = coreServices.NewAccountService(inject)
 	ticketService = coreServices.NewTicketService(inject)
+	verificationCodeService = coreServices.NewVerificationCodeService(inject)
 	router = gin.Default()
 	router.Use(accountService.Auth())
 	router.Use(middleware.CorsMiddleware())

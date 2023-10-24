@@ -2,25 +2,53 @@ package services
 
 import (
 	"bytes"
+	"fmt"
 	"math/rand"
 	"text/template"
 	"time"
 
 	errorCode "github.com/boardware-cloud/common/code"
 	constants "github.com/boardware-cloud/common/constants/account"
+	"github.com/boardware-cloud/model/core"
 	model "github.com/boardware-cloud/model/core"
+	"gorm.io/gorm"
 )
 
-func CreateVerificationCode(identity string, purpose constants.VerificationCodePurpose) error {
-	ctx := DB.Where("email = ?", identity).Find(&model.Account{})
-	if purpose == constants.CREATE_ACCOUNT && ctx.RowsAffected != 0 {
+const charset = "0123456789"
+
+var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+func StringWithCharset(length int, charset string) string {
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[seededRand.Intn(len(charset))]
+	}
+	return string(b)
+}
+
+func RandomNumberString(length int) string {
+	return StringWithCharset(length, charset)
+}
+
+func NewVerificationCodeService(db *gorm.DB) VerificationCodeService {
+	return VerificationCodeService{verificationCodeRepository: core.NewVerificationCodeRepository(db)}
+}
+
+type VerificationCodeService struct {
+	verificationCodeRepository core.VerificationCodeRepository
+}
+
+func (v VerificationCodeService) CreateVerificationCode(identity string, purpose constants.VerificationCodePurpose) error {
+	account := accountRepository.GetByEmail(identity)
+	if purpose == constants.CREATE_ACCOUNT && account == nil {
 		return errorCode.ErrEmailExists
 	}
-	if purpose == constants.SET_PASSWORD && ctx.RowsAffected == 0 {
+
+	if purpose == constants.SET_PASSWORD && account == nil {
 		return errorCode.ErrNotFound
 	}
 	var verificationCode model.VerificationCode
-	ctx = DB.Where("identity = ? AND purpose = ?",
+	ctx := DB.Where("identity = ? AND purpose = ?",
 		identity,
 		purpose,
 	).Order("created_at DESC").Find(&verificationCode)
@@ -38,6 +66,7 @@ func CreateVerificationCode(identity string, purpose constants.VerificationCodeP
 		tmpl.Execute(&htmlString, &verificationCodeMap)
 		err := emailSender.SendHtml("", "Boardware Cloud verification code",
 			htmlString.String(), []string{identity}, []string{}, []string{})
+		fmt.Println(err)
 		if err != nil {
 			return errorCode.ErrUndefined
 		}
@@ -47,20 +76,4 @@ func CreateVerificationCode(identity string, purpose constants.VerificationCodeP
 		return nil
 	}
 	return errorCode.ErrTooManyRequests
-}
-
-const charset = "0123456789"
-
-var seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
-
-func StringWithCharset(length int, charset string) string {
-	b := make([]byte, length)
-	for i := range b {
-		b[i] = charset[seededRand.Intn(len(charset))]
-	}
-	return string(b)
-}
-
-func RandomNumberString(length int) string {
-	return StringWithCharset(length, charset)
 }

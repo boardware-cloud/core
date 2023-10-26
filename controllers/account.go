@@ -92,7 +92,6 @@ func (AccountApi) CreateWebauthnTickets(ctx *gin.Context, id string) {
 		errorCode.GinHandler(ctx, err)
 		return
 	}
-
 	ctx.JSON(http.StatusCreated, api.Ticket{
 		Token: ticket,
 		Type:  api.WEBAUTHN,
@@ -103,10 +102,10 @@ func (AccountApi) CreateWebauthnTickets(ctx *gin.Context, id string) {
 func (AccountApi) ListWebAuthn(ctx *gin.Context) {
 	account := coreServices.GetAccount(ctx)
 	if account == nil {
+		errorCode.GinHandler(ctx, errorCode.ErrUnauthorized)
 		return
 	}
-	webauthns := account.ListWebAuthn()
-	ctx.JSON(http.StatusOK, golambda.Map(webauthns,
+	ctx.JSON(http.StatusOK, golambda.Map(account.ListWebAuthn(),
 		func(_ int, cred model.Credential) api.WebAuthn {
 			return api.WebAuthn{
 				Id:        utils.UintToString(cred.ID),

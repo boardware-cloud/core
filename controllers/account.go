@@ -254,21 +254,7 @@ func (AccountApi) CreateAccount(ctx *gin.Context, createAccountRequest api.Creat
 }
 
 func (AccountApi) ListAccount(ctx *gin.Context, ordering api.Ordering, index int64, limit int64, roles []string, email string) {
-	account := coreServices.CheckIfRoot(ctx)
-	if account == nil {
-		return
-	}
-	list := coreServices.ListAccount(index, limit)
-	ctx.JSON(http.StatusOK, api.AccountList{
-		Data: golambda.Map(list.Data, func(_ int, account coreServices.Account) api.Account {
-			return AccountBackward(account)
-		}),
-		Pagination: api.Pagination{
-			Limit: list.Pagination.Limit,
-			Index: list.Pagination.Index,
-			Total: list.Pagination.Total,
-		},
-	})
+
 }
 
 func (AccountApi) GetAccount(ctx *gin.Context) {

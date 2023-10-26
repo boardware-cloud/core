@@ -6,7 +6,6 @@ import (
 	errorCode "github.com/boardware-cloud/common/code"
 	constants "github.com/boardware-cloud/common/constants/account"
 	"github.com/boardware-cloud/common/constants/authenication"
-	"github.com/boardware-cloud/model/common"
 	"github.com/boardware-cloud/model/core"
 )
 
@@ -80,10 +79,6 @@ func GetAuthenticationFactors(email string) []authenication.AuthenticationFactor
 
 func UpdateUserRole(accountId, role constants.Role) {
 	// TODO:
-}
-
-func ListAccount(index, limit int64) common.List[Account] {
-	return AccountListBackward(core.ListAccount(index, limit))
 }
 
 func NFactor(account core.Account, tokens []string, factor int) error {

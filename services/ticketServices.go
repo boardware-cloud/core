@@ -89,12 +89,12 @@ func (t TicketService) createEmailTicket(account core.Account, verificationCode 
 		return "", errorCode.ErrVerificationCode
 	}
 	verificationCodeRepository.Delete(account.Email, constants.TICKET)
-	return TicketString(ticketRepository.CreateTicket("TOTP", account.ID())), nil
+	return TicketString(ticketRepository.CreateTicket("EMAIL", account.ID())), nil
 }
 
 func (t TicketService) createPasswordTicket(account core.Account, password string) (string, error) {
 	if !utils.PasswordsMatch(account.Password, password, account.Salt) {
 		return "", errorCode.ErrUnauthorized
 	}
-	return TicketString(ticketRepository.CreateTicket("TOTP", account.ID())), nil
+	return TicketString(ticketRepository.CreateTicket("PASSWORD", account.ID())), nil
 }

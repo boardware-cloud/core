@@ -17,20 +17,13 @@ var ticketRepository coreModel.TicketRepository
 var webauthRepository coreModel.WebauthRepository
 var ticketService TicketService
 
-func Init(db *gorm.DB) {
+func Init(config *viper.Viper, db *gorm.DB) {
 	DB = db
 	coreModel.Init(DB)
-	viper.SetConfigName("env")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("./config")
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(err)
-	}
-	emailSender.SmtpHost = viper.GetString("smtp.host")
-	emailSender.Port = viper.GetString("smtp.port")
-	emailSender.Email = viper.GetString("smtp.email")
-	emailSender.Password = viper.GetString("smtp.password")
+	emailSender.SmtpHost = config.GetString("smtp.host")
+	emailSender.Port = config.GetString("smtp.port")
+	emailSender.Email = config.GetString("smtp.email")
+	emailSender.Password = config.GetString("smtp.password")
 	accountRepository = coreModel.NewAccountRepository(DB)
 	verificationCodeRepository = coreModel.NewVerificationCodeRepository(DB)
 	ticketRepository = coreModel.NewTicketRepository(DB)

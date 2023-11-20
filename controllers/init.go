@@ -5,6 +5,7 @@ import (
 	coreServices "github.com/boardware-cloud/core/services"
 	"github.com/boardware-cloud/middleware"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
@@ -15,8 +16,8 @@ var ticketService coreServices.TicketService
 
 var verificationCodeService coreServices.VerificationCodeService
 
-func Init(inject *gorm.DB) {
-	coreServices.Init(inject)
+func Init(config *viper.Viper, inject *gorm.DB) {
+	coreServices.Init(config, inject)
 	accountService = coreServices.NewAccountService(inject)
 	ticketService = coreServices.NewTicketService(inject)
 	verificationCodeService = coreServices.NewVerificationCodeService(inject)

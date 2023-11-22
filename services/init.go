@@ -1,9 +1,9 @@
 package services
 
 import (
+	"github.com/boardware-cloud/common/config"
 	"github.com/boardware-cloud/common/notifications"
 	coreModel "github.com/boardware-cloud/model/core"
-	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +17,7 @@ var ticketRepository coreModel.TicketRepository
 var webauthRepository coreModel.WebauthRepository
 var ticketService TicketService
 
-func Init(config *viper.Viper, db *gorm.DB) {
+func Init(db *gorm.DB) {
 	DB = db
 	coreModel.Init(DB)
 	emailSender.SmtpHost = config.GetString("smtp.host")

@@ -8,7 +8,6 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-webauthn/webauthn v0.8.6
 	github.com/pquerna/otp v1.4.0
-	github.com/spf13/viper v1.16.0
 	gorm.io/gorm v1.25.4
 )
 
@@ -19,13 +18,14 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.0.0 // indirect
 	github.com/google/go-tpm v0.9.0 // indirect
 	github.com/google/uuid v1.3.1 // indirect
+	github.com/spf13/viper v1.16.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 )
 
 require (
-	github.com/boardware-cloud/common v0.0.0-20231122022649-2d8b0ee6bded
+	github.com/boardware-cloud/common v0.0.0-20231123013544-58c638885a50
 	github.com/boardware-cloud/core-api v0.0.0-20230914064026-7c514533c0f0
-	github.com/boardware-cloud/model v0.0.0-20231122145507-e6eb7eea6945
+	github.com/boardware-cloud/model v0.0.0-20231123021257-23ac726b39bb
 	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/bytedance/sonic v1.10.1 // indirect
 	github.com/chenyunda218/golambda v0.0.0-20230809035428-25245dc9a8bd

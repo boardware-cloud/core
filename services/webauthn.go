@@ -1,7 +1,6 @@
 package services
 
 import (
-	"github.com/Dparty/common/fault"
 	errorCode "github.com/boardware-cloud/common/code"
 	"github.com/boardware-cloud/common/config"
 	"github.com/boardware-cloud/model/core"
@@ -65,19 +64,18 @@ func BeginLogin(account Account) (*protocol.CredentialAssertion, *core.SessionDa
 		AccountId: account.ID(),
 		Data:      core.WebAuthnSessionData(*session),
 	}
-	DB.Save(&sessionData)
+	sessionDataRepository.Save(&sessionData)
 	return options, &sessionData, nil
 }
 
 func CompleteLogin(sessionId uint, car *protocol.ParsedCredentialAssertionData) (string, error) {
-	var session core.SessionData
-	ctx := DB.Find(&session, sessionId)
-	if ctx.RowsAffected == 0 {
+	session := sessionDataRepository.GetById(sessionId)
+	if session == nil {
 		return "", errorCode.ErrUnauthorized
 	}
 	account := accountRepository.GetById(session.AccountId)
 	if account == nil {
-		return "", fault.ErrUnauthorized
+		return "", errorCode.ErrUnauthorized
 	}
 	_, err := authn.ValidateLogin(account, webauthn.SessionData(session.Data), car)
 	if err != nil {

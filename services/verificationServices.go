@@ -10,7 +10,6 @@ import (
 	errorCode "github.com/boardware-cloud/common/code"
 	constants "github.com/boardware-cloud/common/constants/account"
 	coreModel "github.com/boardware-cloud/model/core"
-	"gorm.io/gorm"
 )
 
 const charset = "0123456789"
@@ -29,12 +28,21 @@ func RandomNumberString(length int) string {
 	return StringWithCharset(length, charset)
 }
 
-func NewVerificationCodeService(db *gorm.DB) VerificationCodeService {
-	return VerificationCodeService{verificationCodeRepository: coreModel.NewVerificationCodeRepository(db)}
+var verificationCodeService *VerificationCodeService
+
+func GetVerificationCodeService() *VerificationCodeService {
+	if verificationCodeService == nil {
+		verificationCodeService = NewVerificationCodeService()
+	}
+	return verificationCodeService
+}
+
+func NewVerificationCodeService() *VerificationCodeService {
+	return &VerificationCodeService{verificationCodeRepository: coreModel.NewVerificationCodeRepository()}
 }
 
 type VerificationCodeService struct {
-	verificationCodeRepository coreModel.VerificationCodeRepository
+	verificationCodeRepository *coreModel.VerificationCodeRepository
 }
 
 func (v VerificationCodeService) CreateVerificationCode(identity string, purpose constants.VerificationCodePurpose) error {

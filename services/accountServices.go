@@ -14,12 +14,21 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewAccountService(inject *gorm.DB) AccountService {
-	return AccountService{accountRepository: core.NewAccountRepository(inject)}
+var accountService *AccountService
+
+func GetAccountService() *AccountService {
+	if accountService == nil {
+		accountService = NewAccountService(DB)
+	}
+	return accountService
+}
+
+func NewAccountService(inject *gorm.DB) *AccountService {
+	return &AccountService{accountRepository: core.GetAccountRepository()}
 }
 
 type AccountService struct {
-	accountRepository core.AccountRepository
+	accountRepository *core.AccountRepository
 }
 
 func (a AccountService) Auth() gin.HandlerFunc {

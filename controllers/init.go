@@ -5,21 +5,15 @@ import (
 	coreServices "github.com/boardware-cloud/core/services"
 	"github.com/boardware-cloud/middleware"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 var router *gin.Engine
 
-var accountService coreServices.AccountService
-var ticketService coreServices.TicketService
+var accountService = coreServices.GetAccountService()
+var ticketService = coreServices.GetTicketService()
+var verificationCodeService = coreServices.GetVerificationCodeService()
 
-var verificationCodeService coreServices.VerificationCodeService
-
-func Init(inject *gorm.DB) {
-	coreServices.Init(inject)
-	accountService = coreServices.NewAccountService(inject)
-	ticketService = coreServices.NewTicketService(inject)
-	verificationCodeService = coreServices.NewVerificationCodeService(inject)
+func init() {
 	router = gin.Default()
 	router.Use(accountService.Auth())
 	router.Use(middleware.CorsMiddleware())

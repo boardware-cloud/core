@@ -25,7 +25,7 @@ require (
 require (
 	github.com/boardware-cloud/common v0.0.0-20231122022649-2d8b0ee6bded
 	github.com/boardware-cloud/core-api v0.0.0-20230914064026-7c514533c0f0
-	github.com/boardware-cloud/model v0.0.0-20231026073717-b098992f9642
+	github.com/boardware-cloud/model v0.0.0-20231122145507-e6eb7eea6945
 	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/bytedance/sonic v1.10.1 // indirect
 	github.com/chenyunda218/golambda v0.0.0-20230809035428-25245dc9a8bd

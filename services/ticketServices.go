@@ -11,15 +11,23 @@ import (
 	"github.com/boardware-cloud/model/core"
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
-	"gorm.io/gorm"
 )
 
-func NewTicketService(db *gorm.DB) TicketService {
-	return TicketService{ticketRepository: core.NewTicketRepository(db)}
+var ticketService *TicketService
+
+func GetTicketService() *TicketService {
+	if ticketService == nil {
+		ticketService = NewTicketService()
+	}
+	return ticketService
+}
+
+func NewTicketService() *TicketService {
+	return &TicketService{ticketRepository: core.GetTicketRepository()}
 }
 
 type TicketService struct {
-	ticketRepository core.TicketRepository
+	ticketRepository *core.TicketRepository
 }
 
 func (t TicketService) CreateTicket(email, ticketType string, password, verificationCode, totpCode *string) (string, error) {

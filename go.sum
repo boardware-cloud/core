@@ -52,6 +52,8 @@ github.com/boardware-cloud/model v0.0.0-20231024073442-524cf3c24ff7 h1:bT+f0j7ri
 github.com/boardware-cloud/model v0.0.0-20231024073442-524cf3c24ff7/go.mod h1:hcO+MGHY12t9JjK24DqqPERwqA2xE1s+sHTcrU75WXA=
 github.com/boardware-cloud/model v0.0.0-20231026073717-b098992f9642 h1:61qYTOsObpW7hQ9R9QpEQvGSmO7vhn1gQOQ1JWiY0sI=
 github.com/boardware-cloud/model v0.0.0-20231026073717-b098992f9642/go.mod h1:hcO+MGHY12t9JjK24DqqPERwqA2xE1s+sHTcrU75WXA=
+github.com/boardware-cloud/model v0.0.0-20231122145507-e6eb7eea6945 h1:3z91QuvoPNSNMQ4cUWOivdpI/6SH+MUYjcotZzWIrNc=
+github.com/boardware-cloud/model v0.0.0-20231122145507-e6eb7eea6945/go.mod h1:hcO+MGHY12t9JjK24DqqPERwqA2xE1s+sHTcrU75WXA=
 github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
 github.com/boombuler/barcode v1.0.1 h1:NDBbPmhS+EqABEs5Kg3n/5ZNjy73Pz7SIV+KCeqyXcs=
 github.com/boombuler/barcode v1.0.1/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=

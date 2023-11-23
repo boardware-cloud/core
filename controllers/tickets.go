@@ -22,6 +22,8 @@ func (TicketApi) CreateTicket(c *gin.Context, request coreapi.CreateTicketReques
 		c.JSON(http.StatusBadRequest, "")
 		return
 	}
+	// fmt.Println(ticketService)
+	// return
 	token, err := ticketService.CreateTicket(request.Email, ticketType, request.Password, request.VerificationCode, request.TotpCode)
 	if err != nil {
 		errorCode.GinHandler(c, err)

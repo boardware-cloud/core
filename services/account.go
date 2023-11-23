@@ -7,6 +7,8 @@ import (
 	constants "github.com/boardware-cloud/common/constants/account"
 	"github.com/boardware-cloud/common/constants/authenication"
 	"github.com/boardware-cloud/model/core"
+	"github.com/pquerna/otp"
+	"github.com/pquerna/otp/totp"
 )
 
 const EXPIRED_TIME = 60 * 5
@@ -42,12 +44,44 @@ func (a Account) ListWebAuthn() []core.Credential {
 
 func (a *Account) DeleteTotp() *Account {
 	a.Entity.Totp = nil
-	accountRepository.Save(&a.Entity)
+	a.Submit()
 	return a
 }
 
 func (a *Account) DeleteWebAuthn(id uint) *Account {
 	DB.Where("account_id = ? AND id = ?", a.ID(), id).Delete(&core.Credential{})
+	return a
+}
+
+func (a *Account) UpdatePassword(newPassword string) *Account {
+	a.Entity.SetPassword(newPassword)
+	a.Submit()
+	return a
+}
+
+func (a *Account) CreateTotp() string {
+	key, _ := totp.Generate(totp.GenerateOpts{
+		Issuer:      "cloud.boardware.com",
+		AccountName: a.Email(),
+	})
+	return key.String()
+}
+
+func (a *Account) UpdateTotp2FA(url, totpCode string) (string, error) {
+	key, err := otp.NewKeyFromURL(url)
+	if err != nil {
+		return "", errorCode.ErrUnauthorized
+	}
+	if !totp.Validate(totpCode, key.Secret()) {
+		return "", errorCode.ErrUnauthorized
+	}
+	a.Entity.Totp = &url
+	a.Submit()
+	return *a.Entity.Totp, nil
+}
+
+func (a *Account) Submit() *Account {
+	accountRepository.Save(&a.Entity)
 	return a
 }
 

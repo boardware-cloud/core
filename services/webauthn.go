@@ -3,10 +3,10 @@ package services
 import (
 	"github.com/Dparty/common/fault"
 	errorCode "github.com/boardware-cloud/common/code"
+	"github.com/boardware-cloud/common/config"
 	"github.com/boardware-cloud/model/core"
 	"github.com/go-webauthn/webauthn/protocol"
 	"github.com/go-webauthn/webauthn/webauthn"
-	"github.com/spf13/viper"
 )
 
 var (
@@ -15,18 +15,12 @@ var (
 )
 
 func init() {
-	viper.SetConfigName("env")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("./config")
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(err)
-	}
-	domain = viper.GetString("boardware.web.domain")
+	var err error
+	domain = config.GetString("boardware.web.domain")
 	wconfig := &webauthn.Config{
 		RPDisplayName: "Boardware Cloud",
 		RPID:          domain,
-		RPOrigins:     []string{"https://" + domain, "http://localhost:3000"},
+		RPOrigins:     []string{"https://" + domain},
 	}
 	if authn, err = webauthn.New(wconfig); err != nil {
 		panic(err)
@@ -75,7 +69,7 @@ func BeginLogin(account Account) (*protocol.CredentialAssertion, *core.SessionDa
 	return options, &sessionData, nil
 }
 
-func FinishLogin(sessionId uint, car *protocol.ParsedCredentialAssertionData) (string, error) {
+func CompleteLogin(sessionId uint, car *protocol.ParsedCredentialAssertionData) (string, error) {
 	var session core.SessionData
 	ctx := DB.Find(&session, sessionId)
 	if ctx.RowsAffected == 0 {

@@ -87,7 +87,7 @@ func (AccountApi) CreateWebauthnTickets(ctx *gin.Context, id string) {
 	if err != nil {
 		return
 	}
-	ticket, err := coreServices.FinishLogin(utils.StringToUint(id), response)
+	ticket, err := coreServices.CompleteLogin(utils.StringToUint(id), response)
 	if err != nil {
 		errorCode.GinHandler(ctx, err)
 		return
@@ -182,7 +182,7 @@ func (AccountApi) GetTotp(ctx *gin.Context) {
 	if account == nil {
 		return
 	}
-	ctx.JSON(http.StatusOK, api.Totp{Url: accountService.CreateTotp(account.Entity)})
+	ctx.JSON(http.StatusOK, api.Totp{Url: account.CreateTotp()})
 }
 
 // CreateTotp2FA implements coreapi.AccountApiInterface.
@@ -195,7 +195,7 @@ func (AccountApi) CreateTotp2FA(ctx *gin.Context, request api.PutTotpRequest) {
 		errorCode.GinHandler(ctx, err)
 		return
 	}
-	url, err := accountService.UpdateTotp2FA(account.Entity, request.Url, request.TotpCode)
+	url, err := account.UpdateTotp2FA(request.Url, request.TotpCode)
 	if err != nil {
 		errorCode.GinHandler(ctx, err)
 		return

@@ -49,6 +49,13 @@ func (a AccountService) GetAccount(id uint) *Account {
 	}
 	return &Account{Entity: *account}
 }
+func (a AccountService) GetAccountByEmail(email string) *Account {
+	account := a.accountRepository.GetByEmail(email)
+	if account == nil {
+		return nil
+	}
+	return &Account{Entity: *account}
+}
 
 func (a AccountService) GetByEmail(email string) *Account {
 	var account *core.Account = a.accountRepository.GetByEmail(email)
@@ -79,15 +86,16 @@ func (a AccountService) CreateAccountWithVerificationCode(email, code, password 
 }
 
 func (a AccountService) UpdatePassword(email string, password *string, code *string, newPassword string) error {
-	var account *core.Account = a.accountRepository.GetByEmail(email)
-	if account == nil {
+	var ac = a.GetAccountByEmail(email)
+	if ac == nil {
 		return errorCode.ErrNotFound
 	}
+	var account = ac.Entity
 	if password != nil {
 		if !utils.PasswordsMatch(account.Password, *password, account.Salt) {
 			return errorCode.ErrUnauthorized
 		}
-		a.accountRepository.Save(account.SetPassword(newPassword))
+		ac.UpdatePassword(newPassword)
 		return nil
 	}
 	if code != nil {
@@ -96,18 +104,10 @@ func (a AccountService) UpdatePassword(email string, password *string, code *str
 			return errorCode.ErrVerificationCode
 		}
 		verificationCodeRepository.Delete(email, constants.SET_PASSWORD)
-		a.accountRepository.Save(account.SetPassword(newPassword))
+		ac.UpdatePassword(newPassword)
 		return nil
 	}
 	return errorCode.ErrVerificationCode
-}
-
-func (a AccountService) CreateTotp(account core.Account) string {
-	key, _ := totp.Generate(totp.GenerateOpts{
-		Issuer:      "cloud.boardware.com",
-		AccountName: account.Email,
-	})
-	return key.String()
 }
 
 func (a AccountService) UpdateTotp2FA(account core.Account, url, totpCode string) (string, error) {
@@ -123,13 +123,14 @@ func (a AccountService) UpdateTotp2FA(account core.Account, url, totpCode string
 	return *account.Totp, nil
 }
 
+const CREATE_SESSION_COLDDOWN = 500
+
 func (a AccountService) CreateSessionWithTickets(email string, tokens []string) (*Session, error) {
 	account := a.accountRepository.GetByEmail(email)
 	if account == nil {
 		return nil, fault.ErrUnauthorized
 	}
-
-	if !account.ColdDown(500) {
+	if !account.ColdDown(CREATE_SESSION_COLDDOWN) {
 		return nil, errorCode.ErrTooManyRequests
 	}
 	account.CreateColdDown()

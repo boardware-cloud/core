@@ -4,11 +4,10 @@ go 1.21
 
 require (
 	github.com/Dparty/common v0.0.0-20230929033726-ff769bca8c94
-	github.com/boardware-cloud/middleware v0.0.0-20231024043730-fec00c2fa1eb
+	github.com/boardware-cloud/middleware v0.0.0-20231123063935-dc48f813a8bc
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-webauthn/webauthn v0.8.6
 	github.com/pquerna/otp v1.4.0
-	gorm.io/gorm v1.25.4
 )
 
 require (
@@ -20,12 +19,13 @@ require (
 	github.com/google/uuid v1.3.1 // indirect
 	github.com/spf13/viper v1.16.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
+	gorm.io/gorm v1.25.4 // indirect
 )
 
 require (
 	github.com/boardware-cloud/common v0.0.0-20231123013544-58c638885a50
 	github.com/boardware-cloud/core-api v0.0.0-20230914064026-7c514533c0f0
-	github.com/boardware-cloud/model v0.0.0-20231123021257-23ac726b39bb
+	github.com/boardware-cloud/model v0.0.0-20231123064401-4bff54a4798c
 	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/bytedance/sonic v1.10.1 // indirect
 	github.com/chenyunda218/golambda v0.0.0-20230809035428-25245dc9a8bd

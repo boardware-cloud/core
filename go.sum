@@ -44,10 +44,10 @@ github.com/boardware-cloud/common v0.0.0-20231123013544-58c638885a50 h1:yPUOSJal
 github.com/boardware-cloud/common v0.0.0-20231123013544-58c638885a50/go.mod h1:Ztn+PIPt9IhKncTFySl6LOyMhCV+AseebVcV5dDE18Y=
 github.com/boardware-cloud/core-api v0.0.0-20230914064026-7c514533c0f0 h1:kUZtjGdh0LvmrCV+hoo/DBdH6c5xb4H2xTao6mz0nJU=
 github.com/boardware-cloud/core-api v0.0.0-20230914064026-7c514533c0f0/go.mod h1:CBzaVEKgmoQwV2lnuYnXuUKyjBqeDcNm87knRcIhdoY=
-github.com/boardware-cloud/middleware v0.0.0-20231024043730-fec00c2fa1eb h1:Uh/GMEB6zihRy+FuuOTfVBxMevjGyPVjPw/P7TcrASA=
-github.com/boardware-cloud/middleware v0.0.0-20231024043730-fec00c2fa1eb/go.mod h1:ye9nR2aUtD7RkGbF+1IaF6tVIj0cr3l1xIsv5snQEhY=
-github.com/boardware-cloud/model v0.0.0-20231123021257-23ac726b39bb h1:NurGdiBxg4qAYCfyTs/AlkAGCWXRLtuyQEz5lmC3HYw=
-github.com/boardware-cloud/model v0.0.0-20231123021257-23ac726b39bb/go.mod h1:hcO+MGHY12t9JjK24DqqPERwqA2xE1s+sHTcrU75WXA=
+github.com/boardware-cloud/middleware v0.0.0-20231123063935-dc48f813a8bc h1:xaWJUrdZI8auAGkQ5ZxdZ7oXY55TTZWl5x3/Qf1E450=
+github.com/boardware-cloud/middleware v0.0.0-20231123063935-dc48f813a8bc/go.mod h1:E4vtrMZpbi9VGe96EfvprNPrgoJBKGBaYVloa8vsfw0=
+github.com/boardware-cloud/model v0.0.0-20231123064401-4bff54a4798c h1:+9rTrd28XZr6EayDMgGbxZrR8Y7qS/KPgREKU0LFi6g=
+github.com/boardware-cloud/model v0.0.0-20231123064401-4bff54a4798c/go.mod h1:hcO+MGHY12t9JjK24DqqPERwqA2xE1s+sHTcrU75WXA=
 github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=
 github.com/boombuler/barcode v1.0.1 h1:NDBbPmhS+EqABEs5Kg3n/5ZNjy73Pz7SIV+KCeqyXcs=
 github.com/boombuler/barcode v1.0.1/go.mod h1:paBWMcWSl3LHKBqUq+rly7CNSldXjb2rDl3JlRe0mD8=

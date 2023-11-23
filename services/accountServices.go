@@ -11,19 +11,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
-	"gorm.io/gorm"
 )
 
 var accountService *AccountService
 
 func GetAccountService() *AccountService {
 	if accountService == nil {
-		accountService = NewAccountService(DB)
+		accountService = NewAccountService()
 	}
 	return accountService
 }
 
-func NewAccountService(inject *gorm.DB) *AccountService {
+func NewAccountService() *AccountService {
 	return &AccountService{accountRepository: core.GetAccountRepository()}
 }
 

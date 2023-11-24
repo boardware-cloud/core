@@ -39,21 +39,21 @@ func (t TicketService) CreateTicket(email, ticketType string, password, verifica
 	if !account.ColdDown(500) {
 		return "", errorCode.ErrTooManyRequests
 	}
-	// account.CreateColdDown()
-	// switch ticketType {
-	// case "PASSWORD":
-	// 	if password != nil {
-	// 		return t.createPasswordTicket(account, *password)
-	// 	}
-	// case "TOTP":
-	// 	if totpCode != nil {
-	// 		return t.createTotpTicket(account, *totpCode)
-	// 	}
-	// case "EMAIL":
-	// 	if verificationCode != nil {
-	// 		return t.createEmailTicket(account, *verificationCode)
-	// 	}
-	// }
+	account.CreateColdDown()
+	switch ticketType {
+	case "PASSWORD":
+		if password != nil {
+			return t.createPasswordTicket(account, *password)
+		}
+	case "TOTP":
+		if totpCode != nil {
+			return t.createTotpTicket(account, *totpCode)
+		}
+	case "EMAIL":
+		if verificationCode != nil {
+			return t.createEmailTicket(account, *verificationCode)
+		}
+	}
 	return "", errorCode.ErrUnauthorized
 }
 

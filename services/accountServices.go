@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/Dparty/common/fault"
+	"github.com/Dparty/common/singleton"
 	errorCode "github.com/boardware-cloud/common/code"
 	constants "github.com/boardware-cloud/common/constants/account"
 	"github.com/boardware-cloud/common/utils"
@@ -13,16 +14,13 @@ import (
 	"github.com/pquerna/otp/totp"
 )
 
-var accountService *AccountService
+var accountService = singleton.NewSingleton[AccountService](newAccountService, singleton.Eager)
 
 func GetAccountService() *AccountService {
-	if accountService == nil {
-		accountService = NewAccountService()
-	}
-	return accountService
+	return accountService.Get()
 }
 
-func NewAccountService() *AccountService {
+func newAccountService() *AccountService {
 	return &AccountService{accountRepository: core.GetAccountRepository()}
 }
 
@@ -48,6 +46,7 @@ func (a AccountService) GetAccount(id uint) *Account {
 	}
 	return &Account{Entity: *account}
 }
+
 func (a AccountService) GetAccountByEmail(email string) *Account {
 	account := a.accountRepository.GetByEmail(email)
 	if account == nil {

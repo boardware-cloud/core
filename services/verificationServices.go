@@ -7,6 +7,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/Dparty/common/singleton"
 	errorCode "github.com/boardware-cloud/common/code"
 	constants "github.com/boardware-cloud/common/constants/account"
 	coreModel "github.com/boardware-cloud/model/core"
@@ -28,16 +29,13 @@ func RandomNumberString(length int) string {
 	return StringWithCharset(length, charset)
 }
 
-var verificationCodeService *VerificationCodeService
+var verificationCodeService = singleton.NewSingleton[VerificationCodeService](newVerificationCodeService, singleton.Eager)
 
 func GetVerificationCodeService() *VerificationCodeService {
-	if verificationCodeService == nil {
-		verificationCodeService = NewVerificationCodeService()
-	}
-	return verificationCodeService
+	return verificationCodeService.Get()
 }
 
-func NewVerificationCodeService() *VerificationCodeService {
+func newVerificationCodeService() *VerificationCodeService {
 	return &VerificationCodeService{verificationCodeRepository: coreModel.NewVerificationCodeRepository()}
 }
 

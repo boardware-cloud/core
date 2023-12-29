@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Dparty/common/singleton"
 	errorCode "github.com/boardware-cloud/common/code"
 	constants "github.com/boardware-cloud/common/constants/account"
 	"github.com/boardware-cloud/common/utils"
@@ -13,16 +14,13 @@ import (
 	"github.com/pquerna/otp/totp"
 )
 
-var ticketService *TicketService
+var ticketService = singleton.NewSingleton[TicketService](newTicketService, singleton.Eager)
 
 func GetTicketService() *TicketService {
-	if ticketService == nil {
-		ticketService = NewTicketService()
-	}
-	return ticketService
+	return ticketService.Get()
 }
 
-func NewTicketService() *TicketService {
+func newTicketService() *TicketService {
 	return &TicketService{ticketRepository: core.GetTicketRepository()}
 }
 

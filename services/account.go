@@ -118,7 +118,7 @@ func UpdateUserRole(accountId, role constants.Role) {
 func NFactor(account core.Account, tokens []string, factor int) error {
 	var fa map[string]bool = make(map[string]bool)
 	for _, token := range tokens {
-		ticket, err := ticketService.UseTicket(token)
+		ticket, err := ticketService.Get().UseTicket(token)
 		if err != nil {
 			return errorCode.ErrUnauthorized
 		}
